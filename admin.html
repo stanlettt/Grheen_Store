@@ -743,8 +743,119 @@ const H = {
 };
 
 const BIN_ID  = '6a3c4a21f5f4af5e292b3a3b';
-const BIN_KEY = '\x24\x32\x61\x24\x31\x30\x24\x53\x68\x61\x61\x72\x61\x36\x32\x61\x41\x74\x43\x77\x53\x31\x61\x6b\x58\x4d\x4d\x44\x2e\x35\x77\x6d\x43\x52\x51\x42\x55\x50\x79\x34\x51\x41\x61\x4f\x4d\x63\x4e\x38\x35\x76\x61\x50\x32\x6c\x56\x33\x31\x64\x39\x36';
+const BIN_KEY = '$2a$10$piNuQFvk5hpdunPLjdVxQ.pshMlvJYHs4UepRv90h1EAvq3CTDXy2';
 const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+
+const PRODUITS_DEFAUT = [
+  { id:1,  nom:'Baya', cat:'bijoux', icone:'👗', photos:['images/vetements1.jpg'], prix:4500, badge:'Nouveau', note:5 },
+  { id:2,  nom:'Baya', cat:'bijoux', icone:'👗', photos:['images/vetements2.jpg'], prix:4500, badge:'Nouveau', note:5 },
+  { id:3,  nom:'Baya', cat:'bijoux', icone:'👗', photos:['images/vetements3.jpg'], prix:4500, badge:'Nouveau', note:5 },
+  { id:4,  nom:'Caftan', cat:'bijoux', icone:'✨', photos:['images/vetements4.jpg'], prix:15000, badge:'Luxe', note:5 },
+  { id:5,  nom:'Djellaba', cat:'bijoux', icone:'🧕', photos:['images/vetements5.jpg'], prix:8900, badge:'', note:5 },
+  { id:6,  nom:'Gourde Stanley', cat:'stanley', icone:'🥤', photos:['images/stanley1.jpg'], prix:18000, badge:'', note:5 },
+  { id:7,  nom:'Gourde Stanley', cat:'stanley', icone:'🥤', photos:['images/stanley2.jpg'], prix:18000, badge:'Nouveau', note:5 },
+  { id:8,  nom:'Gourde Stanley', cat:'stanley', icone:'🥤', photos:['images/stanley3.jpg'], prix:16000, badge:'', note:5 },
+  { id:9,  nom:'Gourde Stanley', cat:'stanley', icone:'🥤', photos:['images/stanley4.jpg'], prix:16000, badge:'', note:5 },
+  { id:10, nom:'Gourde Stanley', cat:'stanley', icone:'🥤', photos:['images/stanley5.jpg'], prix:16000, badge:'', note:5 },
+  { id:11, nom:'Gourde Stanley', cat:'stanley', icone:'🥤', photos:['images/stanley6.jpg'], prix:16000, badge:'', note:5 },
+  { id:12, nom:'Gourde Stanley', cat:'stanley', icone:'🥤', photos:['images/stanley7.jpg'], prix:16000, badge:'', note:5 },
+  { id:13, nom:'Gourde Stanley', cat:'stanley', icone:'🥤', photos:['images/stanley8.jpg'], prix:16000, badge:'', note:4 },
+  { id:14, nom:'Collier', cat:'bijoux', icone:'💎', photos:['images/bijoux1.jpg'], prix:12000, badge:'', note:4 },
+  { id:15, nom:'Bracelet', cat:'bijoux', icone:'💛', photos:['images/bijoux2.jpg'], prix:3200, badge:'', note:4 },
+  { id:16, nom:'Montre', cat:'bijoux', icone:'⌚', photos:['images/bijoux4.jpg'], prix:6800, badge:'', note:5 },
+  { id:17, nom:'Montre', cat:'bijoux', icone:'⌚', photos:['images/bijoux5.jpg'], prix:6800, badge:'', note:5 },
+  { id:18, nom:'Montre', cat:'bijoux', icone:'⌚', photos:['images/bijoux6.jpg'], prix:6800, badge:'', note:5 },
+  { id:19, nom:'Montre', cat:'bijoux', icone:'⌚', photos:['images/bijoux7.jpg'], prix:6800, badge:'', note:5 },
+  { id:20, nom:'Montre', cat:'bijoux', icone:'⌚', photos:['images/bijoux8.jpg'], prix:6800, badge:'', note:5 },
+  { id:21, nom:'Montre', cat:'bijoux', icone:'⌚', photos:['images/bijoux9.jpg'], prix:6800, badge:'', note:5 },
+  { id:22, nom:'Montre', cat:'bijoux', icone:'⌚', photos:['images/bijoux10.jpg'], prix:6800, badge:'', note:5 },
+  { id:101, nom:'Montre', cat:'bijoux', icone:'⌚', photos:['images/bijoux11.jpg'], prix:6800, badge:'', note:5 },
+  { id:102, nom:'Montre', cat:'bijoux', icone:'⌚', photos:['images/bijoux12.jpg'], prix:6800, badge:'', note:5 },
+  { id:103, nom:'Montre', cat:'bijoux', icone:'⌚', photos:['images/bijoux13.jpg'], prix:6800, badge:'', note:5 },
+  { id:104, nom:'Montre', cat:'bijoux', icone:'⌚', photos:['images/bijoux14.jpg'], prix:6800, badge:'', note:5 },
+  { id:105, nom:'Montre', cat:'bijoux', icone:'⌚', photos:['images/bijoux15.jpg'], prix:6800, badge:'', note:5 },
+  { id:23, nom:'Babouche', cat:'babouches', icone:'🥿', photos:['images/babouches1.jpg'], prix:2800, badge:'', note:5 },
+  { id:24, nom:'Babouche', cat:'babouches', icone:'🥿', photos:['images/babouches2.jpg'], prix:2800, badge:'', note:5 },
+  { id:25, nom:'Babouche', cat:'babouches', icone:'🥿', photos:['images/babouches3.jpg'], prix:2800, badge:'', note:5 },
+  { id:26, nom:'Babouche', cat:'babouches', icone:'🥿', photos:['images/babouches4.jpg'], prix:2800, badge:'', note:5 },
+  { id:27, nom:'Babouche', cat:'babouches', icone:'🥿', photos:['images/babouches5.jpg'], prix:2800, badge:'', note:5 },
+  { id:28, nom:'Babouche', cat:'babouches', icone:'🥿', photos:['images/babouches6.jpg'], prix:2800, badge:'', note:5 },
+  { id:107, nom:'Babouche', cat:'babouches', icone:'🥿', photos:['images/babouches7.jpg'], prix:2800, badge:'', note:5 },
+  { id:108, nom:'Babouche', cat:'babouches', icone:'🥿', photos:['images/babouches8.jpg'], prix:2800, badge:'', note:5 },
+  { id:109, nom:'Babouche', cat:'babouches', icone:'🥿', photos:['images/babouches9.jpg'], prix:2800, badge:'', note:5 },
+  { id:29, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs1.jpg'], prix:8500, badge:'', note:4 },
+  { id:30, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs2.jpg'], prix:8500, badge:'', note:4 },
+  { id:31, nom:'Sac', cat:'sacs', icone:'🎀', photos:['images/sacs3.jpg'], prix:6200, badge:'Nouveau', note:5 },
+  { id:32, nom:'Sac', cat:'sacs', icone:'🎀', photos:['images/sacs4.jpg'], prix:6200, badge:'Nouveau', note:5 },
+  { id:33, nom:'Sac', cat:'sacs', icone:'💼', photos:['images/sacs5.jpg'], prix:11000, badge:'Luxe', note:5 },
+  { id:40, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs6.jpg'], prix:8500, badge:'', note:5 },
+  { id:41, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs7.jpg'], prix:8500, badge:'', note:5 },
+  { id:42, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs8.jpg'], prix:8500, badge:'', note:5 },
+  { id:43, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs9.jpg'], prix:8500, badge:'', note:5 },
+  { id:44, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs10.jpg'], prix:8500, badge:'', note:5 },
+  { id:45, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs11.jpg'], prix:8500, badge:'', note:5 },
+  { id:46, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs12.jpg'], prix:8500, badge:'', note:5 },
+  { id:47, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs13.jpg'], prix:8500, badge:'', note:5 },
+  { id:48, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs14.jpg'], prix:8500, badge:'', note:5 },
+  { id:49, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs15.jpg'], prix:8500, badge:'', note:5 },
+  { id:50, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs16.jpg'], prix:8500, badge:'', note:5 },
+  { id:51, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs17.jpg'], prix:8500, badge:'', note:5 },
+  { id:52, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs18.jpg'], prix:8500, badge:'', note:5 },
+  { id:53, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs19.jpg'], prix:8500, badge:'', note:5 },
+  { id:54, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs20.jpg'], prix:8500, badge:'', note:5 },
+  { id:55, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs21.jpg'], prix:8500, badge:'', note:5 },
+  { id:56, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs22.jpg'], prix:8500, badge:'', note:5 },
+  { id:57, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs23.jpg'], prix:8500, badge:'', note:5 },
+  { id:58, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs24.jpg'], prix:8500, badge:'', note:5 },
+  { id:59, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs25.jpg'], prix:8500, badge:'', note:5 },
+  { id:60, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs26.jpg'], prix:8500, badge:'', note:5 },
+  { id:61, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs27.jpg'], prix:8500, badge:'', note:5 },
+  { id:62, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs28.jpg'], prix:8500, badge:'', note:5 },
+  { id:63, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs29.jpg'], prix:8500, badge:'', note:5 },
+  { id:64, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs30.jpg'], prix:8500, badge:'', note:5 },
+  { id:65, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs31.jpg'], prix:8500, badge:'', note:5 },
+  { id:66, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs32.jpg'], prix:8500, badge:'', note:5 },
+  { id:67, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs33.jpg'], prix:8500, badge:'', note:5 },
+  { id:68, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs34.jpg'], prix:8500, badge:'', note:5 },
+  { id:69, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs35.jpg'], prix:8500, badge:'', note:5 },
+  { id:70, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs36.jpg'], prix:8500, badge:'', note:5 },
+  { id:71, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs37.jpg'], prix:8500, badge:'', note:5 },
+  { id:72, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs38.jpg'], prix:8500, badge:'', note:5 },
+  { id:73, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs39.jpg'], prix:8500, badge:'', note:5 },
+  { id:74, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs40.jpg'], prix:8500, badge:'', note:5 },
+  { id:75, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs41.jpg'], prix:8500, badge:'', note:5 },
+  { id:76, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs42.jpg'], prix:8500, badge:'', note:5 },
+  { id:77, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs43.jpg'], prix:8500, badge:'', note:5 },
+  { id:78, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs44.jpg'], prix:8500, badge:'', note:5 },
+  { id:79, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs45.jpg'], prix:8500, badge:'', note:5 },
+  { id:80, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs46.jpg'], prix:8500, badge:'', note:5 },
+  { id:100, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs47.jpg'], prix:8500, badge:'', note:5 },
+  { id:95, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs48.jpg'], prix:8500, badge:'', note:5 },
+  { id:96, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs49.jpg'], prix:8500, badge:'', note:5 },
+  { id:97, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs50.jpg'], prix:8500, badge:'', note:5 },
+  { id:98, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs51.jpg'], prix:8500, badge:'', note:5 },
+  { id:99, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs52.jpg'], prix:8500, badge:'', note:5 },
+  { id:34, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums1.jpg'], prix:5500, badge:'', note:5 },
+  { id:35, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums2.jpg'], prix:5500, badge:'', note:5 },
+  { id:36, nom:'Parfum', cat:'parfums', icone:'🌹', photos:['images/parfums3.jpg'], prix:4200, badge:'', note:4 },
+  { id:37, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums4.jpg'], prix:5500, badge:'', note:5 },
+  { id:38, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums5.jpg'], prix:5500, badge:'', note:5 },
+  { id:39, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums6.jpg'], prix:5500, badge:'', note:5 },
+  { id:81, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums7.jpg'], prix:5500, badge:'', note:5 },
+  { id:82, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums8.jpg'], prix:5500, badge:'', note:5 },
+  { id:83, nom:'Parfum', cat:'parfums', icone:'🌹', photos:['images/parfums9.jpg'], prix:4200, badge:'', note:4 },
+  { id:84, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums10.jpg'], prix:5500, badge:'', note:5 },
+  { id:85, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums11.jpg'], prix:5500, badge:'', note:5 },
+  { id:86, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums12.jpg'], prix:5500, badge:'', note:5 },
+  { id:87, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums13.jpg'], prix:5500, badge:'', note:5 },
+  { id:88, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums14.jpg'], prix:5500, badge:'', note:5 },
+  { id:89, nom:'Parfum', cat:'parfums', icone:'🌹', photos:['images/parfums15.jpg'], prix:4200, badge:'', note:4 },
+  { id:90, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums16.jpg'], prix:5500, badge:'', note:5 },
+  { id:91, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums17.jpg'], prix:5500, badge:'', note:5 },
+  { id:92, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums18.jpg'], prix:5500, badge:'', note:5 },
+  { id:93, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums19.jpg'], prix:5500, badge:'', note:5 },
+  { id:94, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums20.jpg'], prix:5500, badge:'', note:5 },
+];
 
 /* ══════════════════════════════════════
    ÉTAT
@@ -921,15 +1032,32 @@ async function charger() {
   setBadge('⏳ Connexion...','');
   try {
     const res  = await fetch(BIN_URL, { headers:{ 'X-Master-Key': BIN_KEY }});
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
     const rec  = data.record || {};
-    produits   = Array.isArray(rec.produits)  ? rec.produits  : [];
-    commandes  = Array.isArray(rec.commandes) ? rec.commandes : [];
+    // Si JSONBin a des produits enregistrés, les utiliser ; sinon partir des produits par défaut
+    produits  = Array.isArray(rec.produits)  && rec.produits.length  ? rec.produits  : [...PRODUITS_DEFAUT];
+    commandes = Array.isArray(rec.commandes) ? rec.commandes : [];
+    // Sauvegarder en local comme backup
+    localStorage.setItem('gs_produits',  JSON.stringify(produits));
+    localStorage.setItem('gs_commandes', JSON.stringify(commandes));
     setBadge('✅ En ligne','ok');
   } catch(e) {
-    produits = []; commandes = [];
-    setBadge('❌ Hors ligne','err');
-    toast('Connexion JSONBin impossible.','err');
+    // Fallback 1 : localStorage
+    const localProd = localStorage.getItem('gs_produits');
+    const localCmd  = localStorage.getItem('gs_commandes');
+    if (localProd) {
+      produits  = JSON.parse(localProd);
+      commandes = localCmd ? JSON.parse(localCmd) : [];
+      setBadge('⚠️ Cache local','or');
+      toast('⚠️ JSONBin inaccessible — données locales chargées.','or');
+    } else {
+      // Fallback 2 : produits par défaut intégrés
+      produits  = [...PRODUITS_DEFAUT];
+      commandes = [];
+      setBadge('⚠️ Hors ligne','or');
+      toast('⚠️ Mode hors ligne — produits par défaut affichés.','or');
+    }
   }
   renderStats();
   renderTable();
