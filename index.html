@@ -327,6 +327,15 @@ nav a:hover::after { left: 0; right: 0; }
 }
 .categorie-desc { font-size: 0.78rem; color: var(--texte-doux); letter-spacing: 0.1em; }
 
+/* AVANCE PAIEMENT */
+.avance-bloc { margin-top: 0.8rem; border-radius: var(--radius-sm); overflow: hidden; }
+.avance-ligne { display: flex; justify-content: space-between; align-items: center; padding: 0.7rem 1rem; font-size: 0.88rem; }
+.avance-ligne.principal { background: linear-gradient(135deg, #fce4ec, #fff5f7); border-left: 3px solid var(--rose); }
+.avance-ligne.principal strong { color: var(--rose); font-size: 1.05rem; }
+.avance-ligne.reste { background: var(--fond-2); border-left: 3px solid var(--texte-doux); }
+.avance-ligne.reste strong { color: var(--texte); }
+.avance-note { font-size: 0.72rem; color: var(--texte-doux); padding: 0.5rem 1rem; background: #fff9c4; border-left: 3px solid #f9a825; margin-top: 0.3rem; line-height: 1.5; }
+
 /* PRODUITS CONTROLS */
 .produits-controls {
   display: flex; gap: 1rem; align-items: center;
@@ -1500,6 +1509,9 @@ footer {
       <span class="total-montant" id="totalAffiche">— FCFA</span>
     </div>
 
+    <!-- Avance calculée automatiquement -->
+    <div id="avanceInfo" style="display:none;margin-bottom:1rem;"></div>
+
     <button class="btn-or" style="width:100%;padding:1rem;font-size:0.85rem;letter-spacing:0.2em;" onclick="verifierEtValider()">
       Vérifier & Générer le reçu →
     </button>
@@ -1671,6 +1683,42 @@ const INFOS_PAIEMENT = {
     emoji: '💳'
   }
 };
+
+/* ============================================================
+   TABLEAU AVANCES — calculé automatiquement selon le prix
+   ============================================================ */
+const TABLEAU_AVANCES = [
+  { max:8500,   avance:7000  },
+  { max:9000,   avance:7500  },
+  { max:10000,  avance:7500  },
+  { max:15000,  avance:9000  },
+  { max:18000,  avance:10000 },
+  { max:20000,  avance:12500 },
+  { max:22000,  avance:13000 },
+  { max:25000,  avance:15000 },
+  { max:28000,  avance:17000 },
+  { max:30000,  avance:21000 },
+  { max:40000,  avance:25000 },
+  { max:45000,  avance:30000 },
+  { max:50000,  avance:35000 },
+  { max:55000,  avance:40000 },
+  { max:60000,  avance:45000 },
+  { max:65000,  avance:50000 },
+  { max:75000,  avance:60000 },
+  { max:80000,  avance:65000 },
+  { max:85000,  avance:75000 },
+  { max:90000,  avance:80000 },
+  { max:100000, avance:85000 },
+];
+
+function calculerAvance(prix) {
+  // Trouver le palier correspondant
+  for (const palier of TABLEAU_AVANCES) {
+    if (prix <= palier.max) return palier.avance;
+  }
+  // Au-delà de 100 000 : 85% du prix
+  return Math.round(prix * 0.85);
+}
 
 /* ============================================================
    ÉTAT GLOBAL
@@ -2209,11 +2257,32 @@ function ouvrirFormCommande(produitId, produitNom, produitPrix) {
 }
 
 function mettreAJourTotal() {
-  const qte  = parseInt(document.getElementById('fQuantite')?.value) || 1;
-  let prix   = prixEnCours;
+  const qte   = parseInt(document.getElementById('fQuantite')?.value) || 1;
+  let prix    = prixEnCours;
   if (produitEnCours === null && panier.length > 0) prix = calculerTotal();
-  const total = prix * (produitEnCours !== null ? qte : 1);
+  const total  = prix * (produitEnCours !== null ? qte : 1);
+  const avance = calculerAvance(total);
+  const reste  = total - avance;
+
   document.getElementById('totalAffiche').textContent = total.toLocaleString('fr-FR') + ' FCFA';
+
+  // Afficher le bloc avance si l'élément existe
+  const blocAvance = document.getElementById('avanceInfo');
+  if (blocAvance) {
+    blocAvance.innerHTML = `
+      <div class="avance-bloc">
+        <div class="avance-ligne principal">
+          <span>💳 Avance à payer maintenant</span>
+          <strong>${avance.toLocaleString('fr-FR')} FCFA</strong>
+        </div>
+        <div class="avance-ligne reste">
+          <span>📦 Reste à la livraison</span>
+          <strong>${reste.toLocaleString('fr-FR')} FCFA</strong>
+        </div>
+        <div class="avance-note">⚠ L'avance inclut les frais. La commande est confirmée dès réception de l'avance.</div>
+      </div>`;
+    blocAvance.style.display = 'block';
+  }
 }
 
 function afficherInfoPaiement(methode) {
@@ -2221,8 +2290,18 @@ function afficherInfoPaiement(methode) {
   if (!methode || !INFOS_PAIEMENT[methode]) {
     info.innerHTML = ''; info.classList.remove('visible'); return;
   }
-  const m = INFOS_PAIEMENT[methode];
-  info.innerHTML = `<strong>${m.emoji} ${methode}</strong>Numéro : <strong>${m.numero}</strong> (${m.nom})<br>${m.instructions}`;
+  const m     = INFOS_PAIEMENT[methode];
+  const qte   = parseInt(document.getElementById('fQuantite')?.value) || 1;
+  let prix    = prixEnCours;
+  if (produitEnCours === null && panier.length > 0) prix = calculerTotal();
+  const total  = prix * (produitEnCours !== null ? qte : 1);
+  const avance = calculerAvance(total);
+
+  info.innerHTML = `
+    <strong>${m.emoji} ${methode}</strong>
+    Envoyez l'avance de <strong style="color:var(--rose);font-size:1.05em;">${avance.toLocaleString('fr-FR')} FCFA</strong>
+    au numéro <strong>${m.numero}</strong> (${m.nom}).<br>
+    <small style="opacity:0.85;">${m.instructions}</small>`;
   info.classList.add('visible');
 }
 
@@ -2311,11 +2390,16 @@ function genererRecu(nom, tel, adresse, paiement) {
     <div class="recu-ligne"><span class="lib">Livraison estimée avant le</span><span class="val">${dateLivStr}</span></div>
   `;
 
+  const avanceRecu = calculerAvance(totalFinal);
+  const resteRecu  = totalFinal - avanceRecu;
+
   document.getElementById('recuInstruction').innerHTML = `
     <strong>📱 Instructions de paiement — ${paiement}</strong>
-    Envoyez <strong>${totalFinal.toLocaleString('fr-FR')} FCFA</strong> au numéro ${infoPaiement.numero || 'XXXX XXX XXX'} (${infoPaiement.nom || 'GHREEN STORE'}).<br>
-    Mentionnez la référence <strong>${ref}</strong> dans le commentaire de votre transfert.<br>
-    Votre commande sera confirmée dès réception du paiement. Merci pour votre confiance ! ✦
+    Envoyez l'avance de <strong style="color:var(--rose);">${avanceRecu.toLocaleString('fr-FR')} FCFA</strong>
+    au numéro ${infoPaiement.numero || 'XXXX XXX XXX'} (${infoPaiement.nom || 'GHREEN STORE'}).<br>
+    Mentionnez la référence <strong>${ref}</strong> dans votre transfert.<br>
+    Le reste (<strong>${resteRecu.toLocaleString('fr-FR')} FCFA</strong>) sera réglé à la livraison.<br>
+    <small style="opacity:0.8;">L'avance inclut les frais. Commande confirmée dès réception. Merci ! ✦</small>
   `;
 
   document.getElementById('recuBoite').style.display = 'block';
@@ -2335,6 +2419,9 @@ function envoyerNotifWhatsApp(data) {
     .map(a => `• ${a.nom} × ${a.qte} = ${(a.prixUnit * a.qte).toLocaleString('fr-FR')} FCFA`)
     .join('\n');
 
+  const avanceWA = calculerAvance(data.totalFinal);
+  const resteWA  = data.totalFinal - avanceWA;
+
   const message =
 `🛍 *NOUVELLE COMMANDE — GHREEN_STORE*
 ━━━━━━━━━━━━━━━━━━━━━
@@ -2346,17 +2433,16 @@ function envoyerNotifWhatsApp(data) {
 
 🛒 *Articles commandés :*
 ${lignesArticles}
-${data.taille ? `📐 Taille : ${data.taille}\n` : ''}
-${data.couleur ? `🎨 Couleur : ${data.couleur}\n` : ''}
-
+${data.taille ? `📐 Taille : ${data.taille}\n` : ''}${data.couleur ? `🎨 Couleur : ${data.couleur}\n` : ''}
 💰 *TOTAL :* ${data.totalFinal.toLocaleString('fr-FR')} FCFA
 💳 *Paiement :* ${data.paiement}
 
-${data.notes ? `📝 Notes : ${data.notes}\n` : ''}
-
+💵 *AVANCE À PAYER :* ${avanceWA.toLocaleString('fr-FR')} FCFA _(frais inclus)_
+📦 *Reste à la livraison :* ${resteWA.toLocaleString('fr-FR')} FCFA
+${data.notes ? `\n📝 Notes : ${data.notes}` : ''}
 📅 *Livraison avant le :* ${data.dateLivStr}
 ━━━━━━━━━━━━━━━━━━━━━
-✅ Commande à confirmer dès réception du paiement.`;
+✅ Commande confirmée dès réception de l'avance.`;
 
   const url = `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(message)}`;
 
