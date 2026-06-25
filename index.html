@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ghreen_Store — Boutique de Mode Luxe</title>
+<!-- Préconnexions pour accélérer les ressources externes -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -429,24 +432,39 @@ nav a:hover::after { left: 0; right: 0; }
 /* Image produit — ratio réduit + comportement responsive */
 .produit-img {
   width: 100%;
-  aspect-ratio: 4/3; /* Plus court = image moins imposante */
+  aspect-ratio: 4/3;
   background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
   display: flex; align-items: center; justify-content: center;
   font-size: 3rem; color: rgba(194,24,91,0.3);
   overflow: hidden; position: relative;
 }
 
-/* Sur mobile, on compacte encore plus */
-@media (max-width: 480px) {
-  .produit-img {
-    aspect-ratio: 16/10;
-  }
+/* Skeleton shimmer pendant le chargement */
+.produit-img::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0.35) 50%,
+    rgba(255,255,255,0) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+/* On retire le shimmer dès qu'une image est visible */
+.produit-img.loaded::after { display: none; }
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
 .produit-img img {
   width: 100%; height: 100%; object-fit: cover;
-  position: absolute; inset: 0;
+  position: absolute; inset: 0; z-index: 2;
   transition: opacity 0.4s ease, transform 0.4s ease;
+  will-change: opacity;
 }
 .produit-img img.cachee { opacity: 0; pointer-events: none; }
 .produit-img img.active { opacity: 1; }
@@ -923,7 +941,7 @@ footer {
   .btn-menu { display: flex; }
   .form-row { grid-template-columns: 1fr; }
   .hero-ctas { flex-direction: column; align-items: center; }
-  .hero-stats { gap: 1.5rem; flex-wrap: wrap; }
+  .hero-stats { gap: 1.2rem; flex-wrap: wrap; justify-content: center; }
   .etapes-suivi::before { display: none; }
   header { padding: 0 1rem; }
   .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
@@ -937,29 +955,57 @@ footer {
     border-bottom: none;
     border-radius: var(--radius-sm) var(--radius-sm) 0 0;
   }
-  .suivi-form button { border-radius: 0 0 var(--radius-sm) var(--radius-sm); }
-  .modal-boite { padding: 1.5rem; }
+  .suivi-form button { border-radius: 0 0 var(--radius-sm) var(--radius-sm); padding: 0.75rem; }
+  .modal-boite { padding: 1.2rem; }
+  .section { padding: 3rem 1rem; }
+  #categories { padding: 3rem 1rem; }
+  .categories-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+  .categorie-carte { padding: 1.4rem 1rem; }
+  .categorie-icone { font-size: 2rem; margin-bottom: 0.6rem; }
 
-  /* Sur mobile : 1 seule colonne, photos plus compactes */
+  /* Grille produits mobile : 2 colonnes compactes */
   .produits-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
   }
-  .produit-img { aspect-ratio: 1/1; }
-  .produit-corps { padding: 0.9rem; }
-  .produit-nom { font-size: 1rem; }
-  .cat-section-header { gap: 0.8rem; flex-wrap: wrap; }
-  .cat-section-icone { width: 40px; height: 40px; font-size: 1.5rem; }
-  .cat-section-titre { font-size: 1.4rem; }
+  /* Image plus petite sur mobile */
+  .produit-img { aspect-ratio: 3/4; max-height: 200px; }
+  .produit-corps { padding: 0.65rem 0.7rem 0.8rem; }
+  .produit-nom { font-size: 0.88rem; margin-bottom: 0.15rem; line-height: 1.25; }
+  .produit-cat { font-size: 0.62rem; margin-bottom: 0.4rem; }
+  .produit-prix { font-size: 0.95rem; }
+  .produit-actions { gap: 0.35rem; margin-top: 0.65rem; }
+  .btn-ajouter { font-size: 0.62rem; padding: 0.45rem 0.3rem; }
+  .btn-fav { width: 34px; font-size: 0.85rem; }
+  .etoiles { gap: 2px; margin-bottom: 0.3rem; }
+  .etoile { font-size: 0.8rem; }
+
+  /* En-têtes de section catégorie */
+  .cat-section-header { gap: 0.7rem; flex-wrap: wrap; padding-bottom: 0.75rem; margin-bottom: 1.2rem; }
+  .cat-section-icone { width: 38px; height: 38px; font-size: 1.3rem; }
+  .cat-section-titre { font-size: 1.2rem; }
+  .cat-section { margin-bottom: 2.5rem; }
+
+  /* Hero compact sur mobile */
+  .hero-titre { font-size: clamp(2.5rem, 10vw, 4rem); }
+  .hero-sous-titre { font-size: 0.78rem; margin-bottom: 2rem; }
+  .hero-stat-val { font-size: 1.8rem; }
+  .hero-stat-lib { font-size: 0.62rem; }
 }
 
-@media (max-width: 400px) {
+/* Petits téléphones (< 420px) */
+@media (max-width: 420px) {
   .produits-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
   }
-  .produit-img { aspect-ratio: 16/9; }
-  .footer-grid { grid-template-columns: 1fr; }
-  .hero-stat-val { font-size: 2rem; }
+  .produit-img { aspect-ratio: 4/5; max-height: 170px; }
+  .produit-corps { padding: 0.55rem 0.6rem 0.7rem; }
+  .produit-nom { font-size: 0.82rem; }
+  .categories-grid { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .hero-stat-val { font-size: 1.6rem; }
+  .btn-or, .btn-outline { padding: 0.8rem 1.5rem; font-size: 0.7rem; }
 }
 
 @media print {
@@ -1050,11 +1096,6 @@ footer {
     <div class="section-ligne"></div>
   </div>
   <div class="categories-grid">
-    <div class="categorie-carte" onclick="filtrerCategorie('vetements')">
-      <span class="categorie-icone">👗</span>
-      <div class="categorie-nom">Vêtements Mixte</div>
-      <div class="categorie-desc">Homme · Femme · Unisexe</div>
-    </div>
     <div class="categorie-carte" onclick="filtrerCategorie('stanley')">
       <span class="categorie-icone">🥤</span>
       <div class="categorie-nom">Gourdes Stanley Cup</div>
@@ -1063,7 +1104,7 @@ footer {
     <div class="categorie-carte" onclick="filtrerCategorie('bijoux')">
       <span class="categorie-icone">💎</span>
       <div class="categorie-nom">Bijoux & Accessoires</div>
-      <div class="categorie-desc">Colliers · Bracelets · Montres</div>
+      <div class="categorie-desc">Colliers · Montres · Vêtements · Bracelets</div>
     </div>
     <div class="categorie-carte" onclick="filtrerCategorie('babouches')">
       <span class="categorie-icone">🥿</span>
@@ -1074,11 +1115,6 @@ footer {
       <span class="categorie-icone">👜</span>
       <div class="categorie-nom">Sacs</div>
       <div class="categorie-desc">À main · Bandoulière · Clutch</div>
-    </div>
-    <div class="categorie-carte" onclick="filtrerCategorie('decorations')">
-      <span class="categorie-icone">🕯️</span>
-      <div class="categorie-nom">Décorations</div>
-      <div class="categorie-desc">Intérieur · Bougies · Art</div>
     </div>
     <div class="categorie-carte" onclick="filtrerCategorie('parfums')">
       <span class="categorie-icone">🌸</span>
@@ -1496,13 +1532,11 @@ const WHATSAPP_NUMERO = '241077410586';
 
 
 const PRODUITS_DEFAUT = [
-  { id:1,  nom:'baya', cat:'vetements', icone:'👗', photos:['images/vetements1.jpg'], prix:4500, badge:'Nouveau', note:5 },
-  { id:2,  nom:'baya', cat:'vetements', icone:'👗', photos:['images/vetements2.jpg'], prix:4500, badge:'Nouveau', note:5 },
-  { id:3,  nom:'baya', cat:'vetements', icone:'👗', photos:['images/vetements3.jpg'], prix:4500, badge:'Nouveau', note:5 },
-
-  { id:4,  nom:'Caftan', cat:'vetements', icone:'✨', photos:['images/vetements4.jpg'], prix:15000, badge:'Luxe', note:5 },
-  { id:5,  nom:'Djellaba', cat:'vetements', icone:'🧕', photos:['images/vetements5.jpg'], prix:8900, badge:'', note:5 },
-
+  { id:1,  nom:'Baya', cat:'bijoux', icone:'👗', photos:['images/vetements1.jpg'], prix:4500, badge:'Nouveau', note:5 },
+  { id:2,  nom:'Baya', cat:'bijoux', icone:'👗', photos:['images/vetements2.jpg'], prix:4500, badge:'Nouveau', note:5 },
+  { id:3,  nom:'Baya', cat:'bijoux', icone:'👗', photos:['images/vetements3.jpg'], prix:4500, badge:'Nouveau', note:5 },
+  { id:4,  nom:'Caftan', cat:'bijoux', icone:'✨', photos:['images/vetements4.jpg'], prix:15000, badge:'Luxe', note:5 },
+  { id:5,  nom:'Djellaba', cat:'bijoux', icone:'🧕', photos:['images/vetements5.jpg'], prix:8900, badge:'', note:5 },
   { id:6,  nom:'Gourde Stanley', cat:'stanley', icone:'🥤', photos:['images/stanley1.jpg'], prix:18000, badge:'', note:5 },
   { id:7,  nom:'Gourde Stanley', cat:'stanley', icone:'🥤', photos:['images/stanley2.jpg'], prix:18000, badge:'Nouveau', note:5 },
   { id:8,  nom:'Gourde Stanley', cat:'stanley', icone:'🥤', photos:['images/stanley3.jpg'], prix:16000, badge:'', note:5 },
@@ -1511,9 +1545,8 @@ const PRODUITS_DEFAUT = [
   { id:11, nom:'Gourde Stanley', cat:'stanley', icone:'🥤', photos:['images/stanley6.jpg'], prix:16000, badge:'', note:5 },
   { id:12, nom:'Gourde Stanley', cat:'stanley', icone:'🥤', photos:['images/stanley7.jpg'], prix:16000, badge:'', note:5 },
   { id:13, nom:'Gourde Stanley', cat:'stanley', icone:'🥤', photos:['images/stanley8.jpg'], prix:16000, badge:'', note:4 },
-
-  { id:14, nom:'Collier', cat:'bijoux', icone:'💎', photos:['images/bijoux1.JPG'], prix:12000, badge:'', note:4 },
-  { id:15, nom:'Bracelet', cat:'bijoux', icone:'💛', photos:['images/bijoux3.JPG'], prix:3200, badge:'', note:4 },
+  { id:14, nom:'Collier', cat:'bijoux', icone:'💎', photos:['images/bijoux1.jpg'], prix:12000, badge:'', note:4 },
+  { id:15, nom:'Bracelet', cat:'bijoux', icone:'💛', photos:['images/bijoux2.jpg'], prix:3200, badge:'', note:4 },
   { id:16, nom:'Montre', cat:'bijoux', icone:'⌚', photos:['images/bijoux4.jpg'], prix:6800, badge:'', note:5 },
   { id:17, nom:'Montre', cat:'bijoux', icone:'⌚', photos:['images/bijoux5.jpg'], prix:6800, badge:'', note:5 },
   { id:18, nom:'Montre', cat:'bijoux', icone:'⌚', photos:['images/bijoux6.jpg'], prix:6800, badge:'', note:5 },
@@ -1521,35 +1554,102 @@ const PRODUITS_DEFAUT = [
   { id:20, nom:'Montre', cat:'bijoux', icone:'⌚', photos:['images/bijoux8.jpg'], prix:6800, badge:'', note:5 },
   { id:21, nom:'Montre', cat:'bijoux', icone:'⌚', photos:['images/bijoux9.jpg'], prix:6800, badge:'', note:5 },
   { id:22, nom:'Montre', cat:'bijoux', icone:'⌚', photos:['images/bijoux10.jpg'], prix:6800, badge:'', note:5 },
-
+  { id:101, nom:'Montre', cat:'bijoux', icone:'⌚', photos:['images/bijoux11.jpg'], prix:6800, badge:'', note:5 },
+  { id:102, nom:'Montre', cat:'bijoux', icone:'⌚', photos:['images/bijoux12.jpg'], prix:6800, badge:'', note:5 },
+  { id:103, nom:'Montre', cat:'bijoux', icone:'⌚', photos:['images/bijoux13.jpg'], prix:6800, badge:'', note:5 },
+  { id:104, nom:'Montre', cat:'bijoux', icone:'⌚', photos:['images/bijoux14.jpg'], prix:6800, badge:'', note:5 },
+  { id:105, nom:'Montre', cat:'bijoux', icone:'⌚', photos:['images/bijoux15.jpg'], prix:6800, badge:'', note:5 },
   { id:23, nom:'Babouche', cat:'babouches', icone:'🥿', photos:['images/babouches1.jpg'], prix:2800, badge:'', note:5 },
   { id:24, nom:'Babouche', cat:'babouches', icone:'🥿', photos:['images/babouches2.jpg'], prix:2800, badge:'', note:5 },
   { id:25, nom:'Babouche', cat:'babouches', icone:'🥿', photos:['images/babouches3.jpg'], prix:2800, badge:'', note:5 },
   { id:26, nom:'Babouche', cat:'babouches', icone:'🥿', photos:['images/babouches4.jpg'], prix:2800, badge:'', note:5 },
   { id:27, nom:'Babouche', cat:'babouches', icone:'🥿', photos:['images/babouches5.jpg'], prix:2800, badge:'', note:5 },
   { id:28, nom:'Babouche', cat:'babouches', icone:'🥿', photos:['images/babouches6.jpg'], prix:2800, badge:'', note:5 },
-
+  { id:107, nom:'Babouche', cat:'babouches', icone:'🥿', photos:['images/babouches7.jpg'], prix:2800, badge:'', note:5 },
+  { id:108, nom:'Babouche', cat:'babouches', icone:'🥿', photos:['images/babouches8.jpg'], prix:2800, badge:'', note:5 },
+  { id:109, nom:'Babouche', cat:'babouches', icone:'🥿', photos:['images/babouches9.jpg'], prix:2800, badge:'', note:5 },
   { id:29, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs1.jpg'], prix:8500, badge:'', note:4 },
   { id:30, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs2.jpg'], prix:8500, badge:'', note:4 },
   { id:31, nom:'Sac', cat:'sacs', icone:'🎀', photos:['images/sacs3.jpg'], prix:6200, badge:'Nouveau', note:5 },
   { id:32, nom:'Sac', cat:'sacs', icone:'🎀', photos:['images/sacs4.jpg'], prix:6200, badge:'Nouveau', note:5 },
   { id:33, nom:'Sac', cat:'sacs', icone:'💼', photos:['images/sacs5.jpg'], prix:11000, badge:'Luxe', note:5 },
-
+  { id:40, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs6.jpg'], prix:8500, badge:'', note:5 },
+  { id:41, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs7.jpg'], prix:8500, badge:'', note:5 },
+  { id:42, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs8.jpg'], prix:8500, badge:'', note:5 },
+  { id:43, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs9.jpg'], prix:8500, badge:'', note:5 },
+  { id:44, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs10.jpg'], prix:8500, badge:'', note:5 },
+  { id:45, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs11.jpg'], prix:8500, badge:'', note:5 },
+  { id:46, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs12.jpg'], prix:8500, badge:'', note:5 },
+  { id:47, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs13.jpg'], prix:8500, badge:'', note:5 },
+  { id:48, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs14.jpg'], prix:8500, badge:'', note:5 },
+  { id:49, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs15.jpg'], prix:8500, badge:'', note:5 },
+  { id:50, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs16.jpg'], prix:8500, badge:'', note:5 },
+  { id:51, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs17.jpg'], prix:8500, badge:'', note:5 },
+  { id:52, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs18.jpg'], prix:8500, badge:'', note:5 },
+  { id:53, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs19.jpg'], prix:8500, badge:'', note:5 },
+  { id:54, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs20.jpg'], prix:8500, badge:'', note:5 },
+  { id:55, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs21.jpg'], prix:8500, badge:'', note:5 },
+  { id:56, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs22.jpg'], prix:8500, badge:'', note:5 },
+  { id:57, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs23.jpg'], prix:8500, badge:'', note:5 },
+  { id:58, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs24.jpg'], prix:8500, badge:'', note:5 },
+  { id:59, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs25.jpg'], prix:8500, badge:'', note:5 },
+  { id:60, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs26.jpg'], prix:8500, badge:'', note:5 },
+  { id:61, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs27.jpg'], prix:8500, badge:'', note:5 },
+  { id:62, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs28.jpg'], prix:8500, badge:'', note:5 },
+  { id:63, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs29.jpg'], prix:8500, badge:'', note:5 },
+  { id:64, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs30.jpg'], prix:8500, badge:'', note:5 },
+  { id:65, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs31.jpg'], prix:8500, badge:'', note:5 },
+  { id:66, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs32.jpg'], prix:8500, badge:'', note:5 },
+  { id:67, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs33.jpg'], prix:8500, badge:'', note:5 },
+  { id:68, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs34.jpg'], prix:8500, badge:'', note:5 },
+  { id:69, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs35.jpg'], prix:8500, badge:'', note:5 },
+  { id:70, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs36.jpg'], prix:8500, badge:'', note:5 },
+  { id:71, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs37.jpg'], prix:8500, badge:'', note:5 },
+  { id:72, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs38.jpg'], prix:8500, badge:'', note:5 },
+  { id:73, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs39.jpg'], prix:8500, badge:'', note:5 },
+  { id:74, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs40.jpg'], prix:8500, badge:'', note:5 },
+  { id:75, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs41.jpg'], prix:8500, badge:'', note:5 },
+  { id:76, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs42.jpg'], prix:8500, badge:'', note:5 },
+  { id:77, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs43.jpg'], prix:8500, badge:'', note:5 },
+  { id:78, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs44.jpg'], prix:8500, badge:'', note:5 },
+  { id:79, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs45.jpg'], prix:8500, badge:'', note:5 },
+  { id:80, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs46.jpg'], prix:8500, badge:'', note:5 },
+  { id:100, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs47.jpg'], prix:8500, badge:'', note:5 },
+  { id:95, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs48.jpg'], prix:8500, badge:'', note:5 },
+  { id:96, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs49.jpg'], prix:8500, badge:'', note:5 },
+  { id:97, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs50.jpg'], prix:8500, badge:'', note:5 },
+  { id:98, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs51.jpg'], prix:8500, badge:'', note:5 },
+  { id:99, nom:'Sac', cat:'sacs', icone:'👜', photos:['images/sacs52.jpg'], prix:8500, badge:'', note:5 },
   { id:34, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums1.jpg'], prix:5500, badge:'', note:5 },
   { id:35, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums2.jpg'], prix:5500, badge:'', note:5 },
   { id:36, nom:'Parfum', cat:'parfums', icone:'🌹', photos:['images/parfums3.jpg'], prix:4200, badge:'', note:4 },
   { id:37, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums4.jpg'], prix:5500, badge:'', note:5 },
   { id:38, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums5.jpg'], prix:5500, badge:'', note:5 },
-  { id:39, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums6.jpg'], prix:5500, badge:'', note:5 }
-]
+  { id:39, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums6.jpg'], prix:5500, badge:'', note:5 },
+  { id:81, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums7.jpg'], prix:5500, badge:'', note:5 },
+  { id:82, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums8.jpg'], prix:5500, badge:'', note:5 },
+  { id:83, nom:'Parfum', cat:'parfums', icone:'🌹', photos:['images/parfums9.jpg'], prix:4200, badge:'', note:4 },
+  { id:84, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums10.jpg'], prix:5500, badge:'', note:5 },
+  { id:85, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums11.jpg'], prix:5500, badge:'', note:5 },
+  { id:86, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums12.jpg'], prix:5500, badge:'', note:5 },
+  { id:87, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums13.jpg'], prix:5500, badge:'', note:5 },
+  { id:88, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums14.jpg'], prix:5500, badge:'', note:5 },
+  { id:89, nom:'Parfum', cat:'parfums', icone:'🌹', photos:['images/parfums15.jpg'], prix:4200, badge:'', note:4 },
+  { id:90, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums16.jpg'], prix:5500, badge:'', note:5 },
+  { id:91, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums17.jpg'], prix:5500, badge:'', note:5 },
+  { id:92, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums18.jpg'], prix:5500, badge:'', note:5 },
+  { id:93, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums19.jpg'], prix:5500, badge:'', note:5 },
+  { id:94, nom:'Parfum', cat:'parfums', icone:'🌸', photos:['images/parfums20.jpg'], prix:5500, badge:'', note:5 },
+];
+
+/* Variable globale produits — remplie depuis JSONBin au chargement */
+let PRODUITS = [];
 
 const CATS_INFO = {
-  vetements:   { label: 'Vêtements Mixte',       icone: '👗' },
   stanley:     { label: 'Gourdes Stanley Cup',    icone: '🥤' },
   bijoux:      { label: 'Bijoux & Accessoires',   icone: '💎' },
   babouches:   { label: 'Babouches',              icone: '🥿' },
   sacs:        { label: 'Sacs',                   icone: '👜' },
-  decorations: { label: 'Décorations',            icone: '🕯️' },
   parfums:     { label: 'Parfums',                icone: '🌸' },
   perruques:   { label: 'Perruques & Tissages',   icone: '💇' },
 }
@@ -1575,55 +1675,108 @@ const INFOS_PAIEMENT = {
 /* ============================================================
    ÉTAT GLOBAL
    ============================================================ */
-/* ===========================================================
-   JSONBIN CONFIG
-   =========================================================== */
-const JSONBIN_API_KEY = '$2a$10$Shaara62aAtCwS1akXMMD.5wmCRQBUPy4QAaOMcN85vaP2lV31d96';
-const JSONBIN_BIN_ID  = '6a3c4a21f5f4af5e292b3a3b';
-
-async function chargerProduitsDepuisJsonBin() {
-  try {
-    const rep = await fetch('https://api.jsonbin.io/v3/b/' + JSONBIN_BIN_ID + '/latest', {
-      headers: { 'X-Master-Key': JSONBIN_API_KEY, 'X-Bin-Meta': 'false' }
-    });
-    if (!rep.ok) throw new Error('JSONBin ' + rep.status);
-    const data = await rep.json();
-    if (Array.isArray(data) && data.length > 0) return data;
-    return null;
-  } catch(e) {
-    console.warn('JSONBin inaccessible, produits locaux', e);
-    return null;
-  }
-}
-
-/* ===========================================================
-   \u00c9TAT GLOBAL
-   =========================================================== */
 let panier           = [];
 let categorieFiltre  = null;
 let produitEnCours   = null;
 let prixEnCours      = 0;
 let noteFormulaire   = 0;
 let favoris          = new Set();
-let PRODUITS         = [];
-let produitsAffiches = [];
+let produitsAffiches = [...PRODUITS];
 let toastTimer       = null;
 const photosActives  = {};
 
-/* ===========================================================
-   INIT
-   =========================================================== */
+/* ============================================================
+   CONFIG JSONBIN
+   ============================================================ */
+const JSONBIN_ID  = '6a3c4a21f5f4af5e292b3a3b';
+const JSONBIN_KEY = '$2a$10$Shaara62aAtCwS1akXMMD.5wmCRQBUPy4QAaOMcN85vaP2lV31d96';
+const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_ID}`;
+
+/* ============================================================
+   INIT — charge les produits depuis JSONBin
+   ============================================================ */
 document.addEventListener('DOMContentLoaded', async () => {
-  const produitsEnLigne = await chargerProduitsDepuisJsonBin();
-  PRODUITS = produitsEnLigne || PRODUITS_DEFAUT;
+  initHeader();
+  initScrollTop();
+  afficherCommentaires();
+  demarrerCompteurs();
+
+  // Affichage immédiat avec les produits par défaut (fallback)
+  PRODUITS = [...PRODUITS_DEFAUT];
   produitsAffiches = [...PRODUITS];
   mettreAJourFiltresTags();
   afficherProduits();
-  afficherCommentaires();
-  demarrerCompteurs();
-  initHeader();
-  initScrollTop();
+
+  // Tentative de chargement depuis JSONBin
+  try {
+    const res = await fetch(JSONBIN_URL, {
+      headers: { 'X-Master-Key': JSONBIN_KEY }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      const remote = data.record;
+      // Si JSONBin contient déjà des produits, on les utilise
+      if (remote && Array.isArray(remote.produits) && remote.produits.length > 0) {
+        PRODUITS = remote.produits;
+        produitsAffiches = [...PRODUITS];
+        mettreAJourFiltresTags();
+        afficherProduits();
+      } else {
+        // Première fois : on initialise JSONBin avec les produits par défaut
+        await fetch(JSONBIN_URL, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Master-Key': JSONBIN_KEY
+          },
+          body: JSON.stringify({ produits: PRODUITS_DEFAUT })
+        });
+      }
+    }
+  } catch(e) {
+    // Pas de connexion → on garde les produits par défaut déjà affichés
+    console.log('JSONBin non disponible, produits par défaut utilisés.');
+  }
 });
+
+/* ============================================================
+   LAZY LOADING INTELLIGENT — IntersectionObserver
+   ============================================================ */
+let _lazyObserver = null;
+
+function activerLazyImages() {
+  // Créer l'observer une seule fois
+  if (!_lazyObserver) {
+    _lazyObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const img = entry.target;
+        if (img.dataset.src) {
+          img.src = img.dataset.src;
+          delete img.dataset.src;
+        }
+        _lazyObserver.unobserve(img);
+      });
+    }, {
+      rootMargin: '200px 0px', // Préchargement 200px avant d'entrer dans la vue
+      threshold: 0
+    });
+  }
+
+  // Observer uniquement les images principales (gs-lazy) sans src encore chargé
+  document.querySelectorAll('img.gs-lazy:not([src])').forEach(img => {
+    // Si déjà en cache (complete), charger immédiatement
+    _lazyObserver.observe(img);
+  });
+}
+
+/* Charge la photo secondaire à la demande (au changement de photo) */
+function chargerImageSiNecessaire(img) {
+  if (!img.src && img.dataset.src) {
+    img.src = img.dataset.src;
+    delete img.dataset.src;
+  }
+}
 
 function initHeader() {
   window.addEventListener('scroll', () => {
@@ -1683,6 +1836,8 @@ function setPhotoActive(produitId, index) {
   imgs.forEach((img, i) => {
     img.classList.toggle('active', i === index);
     img.classList.toggle('cachee', i !== index);
+    // Charger à la demande si c'est la photo sélectionnée
+    if (i === index) chargerImageSiNecessaire(img);
   });
   dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
 }
@@ -1697,11 +1852,24 @@ function rendreCarte(p) {
 
   let imgContenu = '';
   if (photos.length > 0) {
-    imgContenu = photos.map((src, i) =>
-      `<img src="${src}" alt="${p.nom}" loading="lazy"
-        class="${i === idxActif ? 'active' : 'cachee'}"
-        onerror="this.style.display='none'" />`
-    ).join('');
+    // On ne met src que sur la première photo active ; les autres reçoivent data-src
+    // pour ne PAS être téléchargées tant qu'on ne les demande pas
+    imgContenu = photos.map((src, i) => {
+      const estActif = (i === idxActif);
+      if (estActif) {
+        // Image principale : on laisse le IntersectionObserver injecter le src
+        return `<img data-src="${src}" alt="${p.nom}" decoding="async"
+          class="${estActif ? 'active' : 'cachee'} gs-lazy"
+          onload="this.closest('.produit-img')?.classList.add('loaded')"
+          onerror="this.style.display='none'" />`;
+      } else {
+        // Photos secondaires : stockées uniquement dans data-src, src jamais mis
+        return `<img data-src="${src}" alt="${p.nom}" decoding="async"
+          class="cachee gs-lazy-secondary"
+          onload="this.closest('.produit-img')?.classList.add('loaded')"
+          onerror="this.style.display='none'" />`;
+      }
+    }).join('');
     if (photos.length > 1) {
       imgContenu += `
         <button class="photo-nav prev" onclick="event.stopPropagation();changerPhoto(${p.id},-1)">‹</button>
@@ -1791,12 +1959,13 @@ function afficherProduits(liste) {
           ${affichage.map(p => rendreCarte(p)).join('')}
         </div>
       </div>`;
+    requestAnimationFrame(() => activerLazyImages());
     return;
   }
 
   // Mode "tout afficher" → une section par catégorie
   // Ordre d'affichage des catégories
-  const ordreCategories = ['vetements','stanley','bijoux','babouches','sacs','decorations','parfums','perruques'];
+  const ordreCategories = ['stanley','bijoux','babouches','sacs','parfums','perruques'];
   let html = '';
 
   ordreCategories.forEach(cat => {
@@ -1833,6 +2002,8 @@ function afficherProduits(liste) {
   }
 
   contenu.innerHTML = html;
+  // Activer le lazy loading sur les nouvelles images injectées
+  requestAnimationFrame(() => activerLazyImages());
 }
 
 function filtrerCategorie(cat) {
@@ -1869,8 +2040,8 @@ function trierProduits(val) {
 function mettreAJourFiltresTags() {
   const cats = [...new Set(PRODUITS.map(p => p.cat))];
   const noms = {
-    vetements:'Vêtements', stanley:'Stanley Cup', bijoux:'Bijoux',
-    babouches:'Babouches', sacs:'Sacs', decorations:'Déco',
+    stanley:'Stanley Cup', bijoux:'Bijoux & Accessoires',
+    babouches:'Babouches', sacs:'Sacs',
     parfums:'Parfums', perruques:'Perruques'
   };
   document.getElementById('filtresTags').innerHTML =
