@@ -227,6 +227,100 @@ tr:hover td{background:var(--fond-2);}
 .spinner{width:40px;height:40px;border:3px solid rgba(194,24,91,0.2);border-top-color:var(--rose);border-radius:50%;animation:spin 0.8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
+/* ══════════════════════════════
+   MOBILE — SMARTPHONE
+══════════════════════════════ */
+@media(max-width:768px){
+  /* Header compact */
+  .admin-header{padding:0.7rem 1rem;}
+  .admin-logo{font-size:1.3rem;letter-spacing:0.1em;}
+  .sync-badge{display:none;}
+  .role-tag{display:none;}
+  .btn-deco{font-size:0.65rem;padding:0.35rem 0.7rem;letter-spacing:0.08em;}
+
+  /* Main padding réduit */
+  .main{padding:1rem;}
+
+  /* Stats en 2 colonnes */
+  .stats{grid-template-columns:1fr 1fr;gap:0.6rem;}
+  .stat{padding:0.9rem;}
+  .stat-ico{font-size:1.5rem;}
+  .stat-val{font-size:1.4rem;}
+  .stat-lib{font-size:0.6rem;}
+
+  /* Tabs scrollables horizontalement */
+  .tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;padding-bottom:2px;}
+  .tabs::-webkit-scrollbar{height:2px;}
+  .tabs::-webkit-scrollbar-thumb{background:var(--rose);border-radius:2px;}
+  .tab{white-space:nowrap;padding:0.7rem 1rem;font-size:0.68rem;}
+
+  /* Sections */
+  .section-h{font-size:1.4rem;}
+  .box{padding:1rem;}
+  .dev-box{padding:1rem;}
+
+  /* Formulaire 1 colonne */
+  .grid2,.grid3,.cmd-form{grid-template-columns:1fr;}
+
+  /* Table produits — masquer certaines colonnes */
+  th:nth-child(5),td:nth-child(5),
+  th:nth-child(6),td:nth-child(6){display:none;}
+  th,td{padding:0.5rem 0.6rem;font-size:0.78rem;}
+  .td-img img,.td-img .no-img{width:38px;height:38px;}
+  .td-actions{flex-direction:column;gap:0.3rem;}
+  .btn-edit,.btn-del{width:100%;padding:0.35rem 0.5rem;font-size:0.65rem;}
+
+  /* Table commandes */
+  #tbodyCmd tr td:nth-child(1){display:none;}
+
+  /* Boutons form */
+  .form-actions{flex-direction:column;}
+  .btn-rose,.btn-out,.btn-or{width:100%;text-align:center;}
+
+  /* Recherche réf */
+  .ref-search-wrap{padding:1rem;}
+  .ref-search-row{flex-direction:column;}
+  .ref-input{width:100%;font-size:0.88rem;}
+  .ref-search-row .btn-or,
+  .ref-search-row .btn-out{width:100%;}
+
+  /* Fiche commande mobile */
+  .fiche-header{padding:1rem;}
+  .fiche-ref{font-size:1.3rem;}
+  .fiche-body{padding:1rem;}
+  .fiche-produit-bloc{flex-direction:column;align-items:center;text-align:center;}
+  .fiche-photo{width:100%;height:220px;}
+  .fiche-photo-vide{width:100%;height:120px;}
+  .fiche-produit-nom{font-size:1.2rem;text-align:center;}
+  .fiche-montant-row{flex-direction:column;align-items:flex-start;gap:0.2rem;}
+  .fiche-montant-val,.fiche-avance-val,.fiche-reste-val{font-size:1.1rem;}
+  .fiche-actions{flex-direction:column;}
+  .btn-statut{width:100%;padding:0.7rem;font-size:0.75rem;}
+
+  /* Login */
+  .login-box{padding:2rem 1.5rem;}
+  .login-logo{font-size:2rem;}
+
+  /* Stats revenus */
+  .rev-grid{grid-template-columns:1fr 1fr;}
+  .rev-val{font-size:1.3rem;}
+
+  /* Info box */
+  .info-box{font-size:0.78rem;padding:0.8rem;}
+
+  /* Table top */
+  .table-top{flex-direction:column;align-items:stretch;}
+  .t-search{width:100%;}
+  .t-cat{width:100%;}
+}
+
+@media(max-width:380px){
+  .stats{grid-template-columns:1fr 1fr;}
+  .stat-val{font-size:1.2rem;}
+  .rev-grid{grid-template-columns:1fr;}
+  th:nth-child(4),td:nth-child(4){display:none;}
+}
+
 .separateur{height:1px;background:rgba(194,24,91,0.1);margin:2rem 0;}
 .info-box{background:linear-gradient(135deg,#fff9c4,#fff3cd);border:1px solid #f9a825;border-radius:var(--radius-sm);padding:1rem 1.2rem;font-size:0.82rem;color:#5d4037;margin-bottom:1.5rem;line-height:1.6;}
 </style>
@@ -351,13 +445,18 @@ tr:hover td{background:var(--fond-2);}
       <!-- RECHERCHE PAR RÉF -->
       <div class="ref-search-wrap">
         <div class="fiche-section-titre" style="margin-bottom:0.8rem;">🔍 Rechercher une commande par référence</div>
+        <p style="font-size:0.8rem;color:var(--texte-doux);margin-bottom:0.8rem;line-height:1.6;">
+          📲 Le client reçoit sa réf sur WhatsApp (ex: <strong>GS-2026-482910</strong>).<br>
+          Il te l'envoie avec sa capture de paiement. Tu tapes la réf ici pour voir la commande.
+        </p>
         <div class="ref-search-row">
           <input class="ref-input" type="text" id="refInput"
-            placeholder="Ex : GS-2026-482910"
+            placeholder="Tape la réf ici : GS-2026-..."
             oninput="rechercherRef(this.value)"
-            onkeydown="if(event.key==='Escape'){this.value='';cacherFiche();}" />
-          <button class="btn-or" onclick="rechercherRef(document.getElementById('refInput').value)">🔍 Rechercher</button>
-          <button class="btn-out" onclick="document.getElementById('refInput').value='';cacherFiche()">✕ Effacer</button>
+            onkeydown="if(event.key==='Escape'){this.value='';cacherFiche();}"
+            autocomplete="off" autocorrect="off" autocapitalize="characters" />
+          <button class="btn-or" onclick="rechercherRef(document.getElementById('refInput').value)" style="white-space:nowrap;">🔍 Voir la commande</button>
+          <button class="btn-out" onclick="document.getElementById('refInput').value='';cacherFiche()" style="white-space:nowrap;">✕ Effacer</button>
         </div>
         <!-- FICHE RÉSULTAT -->
         <div class="fiche-wrap" id="ficheWrap" style="margin-top:1.5rem;"></div>
