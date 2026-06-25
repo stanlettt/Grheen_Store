@@ -266,7 +266,7 @@ tr:hover td{background:var(--fond-2);}
   th:nth-child(5),td:nth-child(5),
   th:nth-child(6),td:nth-child(6){display:none;}
   th,td{padding:0.5rem 0.6rem;font-size:0.78rem;}
-  .td-img img,.td-img .no-img{width:38px;height:38px;}
+  .td-img img,.td-img .no-img{width:32px;height:32px;border-radius:6px;}
   .td-actions{flex-direction:column;gap:0.3rem;}
   .btn-edit,.btn-del{width:100%;padding:0.35rem 0.5rem;font-size:0.65rem;}
 
@@ -289,8 +289,10 @@ tr:hover td{background:var(--fond-2);}
   .fiche-ref{font-size:1.3rem;}
   .fiche-body{padding:1rem;}
   .fiche-produit-bloc{flex-direction:column;align-items:center;text-align:center;}
-  .fiche-photo{width:100%;height:220px;}
-  .fiche-photo-vide{width:100%;height:120px;}
+  .fiche-photo{width:100px;height:100px;object-fit:cover;}
+  .fiche-photo-vide{width:100px;height:100px;}
+  .fiche-produit-bloc{flex-direction:row;align-items:flex-start;text-align:left;}
+  .fiche-produit-nom{text-align:left;}
   .fiche-produit-nom{font-size:1.2rem;text-align:center;}
   .fiche-montant-row{flex-direction:column;align-items:flex-start;gap:0.2rem;}
   .fiche-montant-val,.fiche-avance-val,.fiche-reste-val{font-size:1.1rem;}
@@ -323,6 +325,142 @@ tr:hover td{background:var(--fond-2);}
 
 .separateur{height:1px;background:rgba(194,24,91,0.1);margin:2rem 0;}
 .info-box{background:linear-gradient(135deg,#fff9c4,#fff3cd);border:1px solid #f9a825;border-radius:var(--radius-sm);padding:1rem 1.2rem;font-size:0.82rem;color:#5d4037;margin-bottom:1.5rem;line-height:1.6;}
+
+/* ══════════════════════════════
+   BARRE RECHERCHE RÉF GLOBALE
+══════════════════════════════ */
+.ref-bar-global{background:#fff;border-bottom:1px solid rgba(194,24,91,0.15);padding:0.6rem 1rem;position:sticky;top:60px;z-index:90;box-shadow:0 2px 8px rgba(194,24,91,0.06);}
+.ref-bar-inner{display:flex;align-items:center;gap:0.5rem;max-width:600px;margin:0 auto;background:var(--fond-2);border:1.5px solid rgba(194,24,91,0.2);border-radius:50px;padding:0.4rem 1rem;transition:var(--transition);}
+.ref-bar-inner:focus-within{border-color:var(--rose);background:#fce4ec;}
+.ref-bar-ico{font-size:1rem;flex-shrink:0;opacity:0.6;}
+.ref-bar-input{flex:1;border:none;background:none;font-family:var(--font-corps);font-size:0.88rem;color:var(--texte);outline:none;min-width:0;}
+.ref-bar-input::placeholder{color:var(--gris);}
+.ref-bar-clear{background:none;border:none;color:var(--gris);cursor:pointer;font-size:1rem;padding:0;line-height:1;flex-shrink:0;}
+.ref-bar-clear:hover{color:var(--rose);}
+.ref-result-global{background:var(--fond);border-bottom:3px solid var(--rose);padding-bottom:1rem;}
+.ref-result-header{display:flex;align-items:center;justify-content:space-between;padding:0.8rem 1rem;background:var(--rose-pale);}
+.ref-result-title{font-size:0.75rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--rose-fonce);font-weight:600;}
+.ref-result-close{background:none;border:none;color:var(--rose);cursor:pointer;font-size:1.1rem;}
+
+/* ══════════════════════════════
+   NAV MOBILE EN BAS
+══════════════════════════════ */
+.nav-mobile{display:none;}
+@media(max-width:768px){
+  /* Espace pour la nav en bas */
+  body{padding-bottom:70px;}
+  .nav-mobile{
+    display:flex;position:fixed;bottom:0;left:0;right:0;z-index:200;
+    background:#fff;border-top:1px solid rgba(194,24,91,0.15);
+    box-shadow:0 -4px 20px rgba(194,24,91,0.1);
+    padding:0.3rem 0 calc(0.3rem + env(safe-area-inset-bottom));
+  }
+  .nav-mob-btn{
+    flex:1;display:flex;flex-direction:column;align-items:center;
+    gap:0.15rem;padding:0.4rem 0.2rem;
+    background:none;border:none;cursor:pointer;
+    font-family:var(--font-corps);transition:var(--transition);
+  }
+  .nav-mob-ico{font-size:1.3rem;line-height:1;}
+  .nav-mob-lib{font-size:0.58rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--gris);transition:var(--transition);}
+  .nav-mob-btn.on .nav-mob-lib{color:var(--rose);font-weight:600;}
+  .nav-mob-btn.on .nav-mob-ico{transform:scale(1.15);}
+  .nav-mob-btn:active{transform:scale(0.95);}
+
+  /* Masquer tabs desktop sur mobile */
+  .tabs{display:none;}
+
+  /* Header encore plus compact */
+  .admin-header{padding:0.6rem 1rem;height:52px;}
+  .admin-logo{font-size:1.2rem;letter-spacing:0.1em;}
+  .sync-badge{font-size:0.6rem;padding:0.2rem 0.5rem;}
+  .btn-deco{font-size:0.8rem;padding:0.3rem 0.6rem;border-radius:50%;}
+
+  /* Barre recherche collée sous le header */
+  .ref-bar-global{top:52px;padding:0.5rem 0.8rem;}
+  .ref-bar-input{font-size:0.82rem;}
+
+  /* Main avec padding top pour header + barre recherche */
+  .main{padding:0.8rem;padding-top:0.8rem;}
+
+  /* Stats 2 colonnes compactes */
+  .stats{grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:1rem;}
+  .stat{padding:0.8rem;gap:0.6rem;}
+  .stat-ico{font-size:1.3rem;}
+  .stat-val{font-size:1.3rem;}
+  .stat-lib{font-size:0.58rem;}
+
+  /* Sections */
+  .section-h{font-size:1.2rem;margin-bottom:1rem;}
+  .box{padding:0.9rem;}
+  .dev-box{padding:0.9rem;}
+
+  /* Formulaire 1 colonne */
+  .grid2,.grid3,.cmd-form{grid-template-columns:1fr;}
+  .fg input,.fg select{padding:0.65rem 0.8rem;font-size:0.85rem;}
+
+  /* Table — colonnes réduites */
+  th:nth-child(5),td:nth-child(5),
+  th:nth-child(6),td:nth-child(6){display:none;}
+  th,td{padding:0.5rem 0.5rem;font-size:0.76rem;}
+  .td-img{width:44px;}
+  .td-img img,.td-img .no-img{width:36px;height:36px;}
+  .td-nom{font-size:0.88rem;}
+  .td-actions{flex-direction:column;gap:0.25rem;}
+  .btn-edit,.btn-del{padding:0.3rem 0.5rem;font-size:0.62rem;}
+
+  /* Boutons form pleine largeur */
+  .form-actions{flex-direction:column;}
+  .btn-rose,.btn-out,.btn-or{width:100%;text-align:center;padding:0.85rem;}
+
+  /* Fiche commande mobile */
+  .fiche-header{padding:0.9rem 1rem;}
+  .fiche-ref{font-size:1.2rem;}
+  .fiche-date{font-size:0.62rem;}
+  .fiche-body{padding:0.9rem;}
+  .fiche-produit-bloc{flex-direction:row;align-items:flex-start;gap:0.8rem;padding:0.9rem;}
+  .fiche-photo{width:80px;height:80px;flex-shrink:0;}
+  .fiche-photo-vide{width:80px;height:80px;flex-shrink:0;font-size:1.5rem;}
+  .fiche-produit-nom{font-size:1rem;}
+  .fiche-montants{padding:0.9rem;}
+  .fiche-montant-row{flex-direction:column;align-items:flex-start;gap:0.1rem;padding:0.4rem 0;}
+  .fiche-montant-val{font-size:1.1rem;}
+  .fiche-avance-val{font-size:1.2rem;}
+  .fiche-reste-val{font-size:0.9rem;}
+  .fiche-actions{flex-direction:column;gap:0.5rem;}
+  .btn-statut{width:100%;padding:0.75rem;font-size:0.75rem;}
+
+  /* Login */
+  .login-box{padding:2rem 1.2rem;}
+  .login-logo{font-size:1.8rem;}
+  .login-box input{font-size:0.88rem;}
+
+  /* Revenus */
+  .rev-grid{grid-template-columns:1fr 1fr;gap:0.5rem;}
+  .rev-val{font-size:1.2rem;}
+  .rev-lib{font-size:0.6rem;}
+  .bar-row{flex-wrap:wrap;gap:0.3rem;}
+  .bar-label{width:50px;font-size:0.65rem;}
+  .bar-val{font-size:0.65rem;width:auto;}
+
+  /* Info box */
+  .info-box{font-size:0.76rem;padding:0.7rem;}
+
+  /* Table top */
+  .table-top{flex-direction:column;gap:0.5rem;padding:0.8rem;}
+  .t-search,.t-cat{width:100%;}
+
+  /* Ref search dans l'onglet commandes — masquée car barre globale suffit */
+  .ref-search-wrap{display:none;}
+}
+
+@media(max-width:360px){
+  .stats{grid-template-columns:1fr 1fr;}
+  .stat-val{font-size:1.1rem;}
+  .rev-grid{grid-template-columns:1fr;}
+  th:nth-child(3),td:nth-child(3){display:none;}
+  .admin-logo{font-size:1rem;}
+}
 </style>
 </head>
 <body>
@@ -344,21 +482,60 @@ tr:hover td{background:var(--fond-2);}
   <div class="admin-header">
     <div class="admin-logo">Ghreen<span>_Store</span></div>
     <div class="header-right">
-      <span class="role-tag" id="roleTag">👗 Propriétaire</span>
-      <span class="sync-badge" id="syncBadge">⏳ Connexion...</span>
-      <button class="btn-deco" onclick="logout()">Déconnexion</button>
+      <span class="sync-badge" id="syncBadge">⏳</span>
+      <button class="btn-deco" onclick="logout()">⏏</button>
+    </div>
+  </div>
+
+  <!-- BARRE RECHERCHE RÉF GLOBALE — toujours visible -->
+  <div class="ref-bar-global" id="refBarGlobal">
+    <div class="ref-bar-inner">
+      <span class="ref-bar-ico">🔍</span>
+      <input type="text" id="refBarInput" class="ref-bar-input"
+        placeholder="Chercher une réf : GS-2026-..."
+        oninput="rechercherRefGlobal(this.value)"
+        autocomplete="off" autocorrect="off" autocapitalize="characters" />
+      <button class="ref-bar-clear" id="refBarClear" onclick="effacerRefBar()" style="display:none;">✕</button>
+    </div>
+  </div>
+
+  <!-- RÉSULTAT RECHERCHE GLOBAL -->
+  <div class="ref-result-global" id="refResultGlobal" style="display:none;">
+    <div class="main" style="padding-top:0;">
+      <div id="refResultContenu"></div>
     </div>
   </div>
 
   <div class="main">
     <div class="stats" id="statsEl"></div>
 
+    <!-- TABS DESKTOP -->
     <div class="tabs" id="tabsEl">
-      <button class="tab on" onclick="goTab('liste',this)">📦 Produits</button>
-      <button class="tab" onclick="goTab('ajouter',this)">➕ Ajouter</button>
-      <button class="tab dev-only" id="tabCommandes" style="display:none" onclick="goTab('commandes',this)">📋 Commandes</button>
-      <button class="tab dev-only" id="tabRevenus" style="display:none" onclick="goTab('revenus',this)">💰 Revenus</button>
+      <button class="tab on" data-tab="liste" onclick="goTab('liste',this)">📦 Produits</button>
+      <button class="tab" data-tab="ajouter" onclick="goTab('ajouter',this)">➕ Ajouter</button>
+      <button class="tab dev-only" id="tabCommandes" data-tab="commandes" style="display:none" onclick="goTab('commandes',this)">📋 Commandes</button>
+      <button class="tab dev-only" id="tabRevenus" data-tab="revenus" style="display:none" onclick="goTab('revenus',this)">💰 Revenus</button>
     </div>
+
+    <!-- NAV BAS MOBILE -->
+    <nav class="nav-mobile" id="navMobile">
+      <button class="nav-mob-btn on" data-tab="liste" onclick="goTabMobile('liste',this)">
+        <span class="nav-mob-ico">📦</span>
+        <span class="nav-mob-lib">Produits</span>
+      </button>
+      <button class="nav-mob-btn" data-tab="ajouter" onclick="goTabMobile('ajouter',this)">
+        <span class="nav-mob-ico">➕</span>
+        <span class="nav-mob-lib">Ajouter</span>
+      </button>
+      <button class="nav-mob-btn dev-only" id="navMobCommandes" data-tab="commandes" style="display:none" onclick="goTabMobile('commandes',this)">
+        <span class="nav-mob-ico">📋</span>
+        <span class="nav-mob-lib">Commandes</span>
+      </button>
+      <button class="nav-mob-btn dev-only" id="navMobRevenus" data-tab="revenus" style="display:none" onclick="goTabMobile('revenus',this)">
+        <span class="nav-mob-ico">💰</span>
+        <span class="nav-mob-lib">Revenus</span>
+      </button>
+    </nav>
 
     <!-- TAB PRODUITS -->
     <div class="tab-c on" id="tab-liste">
@@ -593,8 +770,105 @@ async function sha256(msg) {
    LOGIN
 ══════════════════════════════════════ */
 function setRole(r) {
-  // Sélection de rôle désactivée — détection automatique par mot de passe
   role = r;
+}
+
+/* ══ BARRE RECHERCHE RÉF GLOBALE ══ */
+function rechercherRefGlobal(val) {
+  const ref    = val.trim().toUpperCase();
+  const result = document.getElementById('refResultGlobal');
+  const clear  = document.getElementById('refBarClear');
+  clear.style.display = val ? 'block' : 'none';
+  if (!ref || ref.length < 3) { result.style.display = 'none'; return; }
+
+  const cmd = commandes.find(c => c.ref && c.ref.toUpperCase().includes(ref));
+  result.style.display = 'block';
+  const contenu = document.getElementById('refResultContenu');
+
+  if (!cmd) {
+    contenu.innerHTML = `
+      <div style="text-align:center;padding:1.5rem;background:#fff;border-radius:var(--radius);border:1px dashed rgba(194,24,91,0.2);margin-top:0.8rem;">
+        <div style="font-size:2rem;margin-bottom:0.5rem;">🔍</div>
+        <div style="color:var(--gris);font-size:0.85rem;">Aucune commande pour <strong>${ref}</strong></div>
+        <div style="color:var(--gris);font-size:0.75rem;margin-top:0.3rem;">Vérifiez la référence envoyée par le client</div>
+      </div>`;
+    return;
+  }
+  // Réutiliser afficherFiche mais dans le conteneur global
+  const avance = calculerAvanceAdmin(cmd.montant);
+  const reste  = cmd.montant - avance;
+  const sl     = cmd.statut==='paid'?'✅ Payée':cmd.statut==='pending'?'⏳ En attente':'❌ Annulée';
+  const photoHTML = cmd.photo
+    ? `<div class="fiche-photo-wrap"><img src="${cmd.photo}" alt="${cmd.produit||''}" class="fiche-photo" onerror="this.parentElement.innerHTML='<div class=\'fiche-photo-vide\'>📦</div>'" /><div class="fiche-photo-label">${cmd.produit||''}</div></div>`
+    : `<div class="fiche-photo-vide">📦</div>`;
+
+  contenu.innerHTML = `
+  <div class="fiche" style="margin-top:0.8rem;">
+    <div class="fiche-header">
+      <div><div class="fiche-ref">${cmd.ref||'GS-????'}</div><div class="fiche-date">📅 ${cmd.date||'—'} | 💳 ${cmd.paiement||'—'}</div></div>
+      <span class="badge-statut ${cmd.statut}">${sl}</span>
+    </div>
+    <div class="fiche-body">
+      <div class="fiche-produit-bloc">
+        ${photoHTML}
+        <div class="fiche-produit-infos">
+          <div class="fiche-section-titre">📦 Article</div>
+          <div class="fiche-produit-nom">${cmd.produit||'—'}</div>
+          <div class="fiche-ligne"><span class="fiche-ligne-lib">Qté</span><span class="fiche-ligne-val">${cmd.qte||1}</span></div>
+          ${cmd.taille?`<div class="fiche-ligne"><span class="fiche-ligne-lib">Taille</span><span class="fiche-ligne-val">${cmd.taille}</span></div>`:''}
+          ${cmd.couleur?`<div class="fiche-ligne"><span class="fiche-ligne-lib">Couleur</span><span class="fiche-ligne-val">${cmd.couleur}</span></div>`:''}
+        </div>
+      </div>
+      <div class="fiche-section" style="margin-bottom:1rem;">
+        <div class="fiche-section-titre">👤 Client</div>
+        <div class="fiche-ligne"><span class="fiche-ligne-lib">Nom</span><span class="fiche-ligne-val">${cmd.nom||cmd.client||'—'}</span></div>
+        <div class="fiche-ligne"><span class="fiche-ligne-lib">Tél</span><span class="fiche-ligne-val">${cmd.tel||'—'}</span></div>
+        <div class="fiche-ligne"><span class="fiche-ligne-lib">Adresse</span><span class="fiche-ligne-val">${cmd.adresse||'—'}</span></div>
+      </div>
+      <div class="fiche-montants">
+        <div class="fiche-montant-row"><span class="fiche-montant-lib">💰 Total</span><span class="fiche-montant-val">${Number(cmd.montant).toLocaleString('fr-FR')} FCFA</span></div>
+        <div class="fiche-montant-row"><span class="fiche-montant-lib">💵 Avance</span><span class="fiche-avance-val">${avance.toLocaleString('fr-FR')} FCFA</span></div>
+        <div class="fiche-montant-row total"><span class="fiche-montant-lib">📦 Reste livraison</span><span class="fiche-reste-val">${reste.toLocaleString('fr-FR')} FCFA</span></div>
+      </div>
+      <div class="fiche-actions">
+        <span style="font-size:0.7rem;color:var(--gris);">Statut :</span>
+        <button class="btn-statut paid"      onclick="changerStatutCmd(${cmd.id},'paid');rechercherRefGlobal(document.getElementById('refBarInput').value)">✅ Payée</button>
+        <button class="btn-statut pending"   onclick="changerStatutCmd(${cmd.id},'pending');rechercherRefGlobal(document.getElementById('refBarInput').value)">⏳ Attente</button>
+        <button class="btn-statut cancelled" onclick="changerStatutCmd(${cmd.id},'cancelled');rechercherRefGlobal(document.getElementById('refBarInput').value)">❌ Annuler</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function effacerRefBar() {
+  document.getElementById('refBarInput').value = '';
+  document.getElementById('refBarClear').style.display = 'none';
+  document.getElementById('refResultGlobal').style.display = 'none';
+}
+
+/* ══ NAV MOBILE ══ */
+function goTabMobile(nom, btn) {
+  // Sync avec les tabs desktop
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.nav-mob-btn').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.tab-c').forEach(c => c.classList.remove('on'));
+
+  if (btn) btn.classList.add('on');
+  // Sync tab desktop correspondant
+  const deskTab = document.querySelector(`.tab[data-tab="${nom}"]`);
+  if (deskTab) deskTab.classList.add('on');
+
+  const el = document.getElementById('tab-' + nom);
+  if (el) el.classList.add('on');
+
+  if (nom==='liste') renderTable();
+  if (nom==='ajouter') resetForm();
+  if (nom==='commandes'){renderCommandes();initDate();}
+  if (nom==='revenus') renderRevenus();
+
+  // Fermer la recherche globale
+  effacerRefBar();
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
 async function login() {
