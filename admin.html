@@ -878,11 +878,23 @@ function renderCommandes() {
   }
 
   conteneur.innerHTML = liste.map(c => {
-    const annulee = c.statut === 'cancelled';
-    const payee   = c.statut === 'paid';
-    const attente = c.statut === 'pending';
-    const statutColor = payee ? 'var(--vert)' : annulee ? 'var(--rouge)' : 'var(--or)';
-    const statutLabel = payee ? '✅ Payée' : annulee ? '❌ Annulée' : '⏳ En attente';
+    const annulee  = c.statut === 'cancelled';
+    const payee    = c.statut === 'paid';
+    const attente  = c.statut === 'pending';
+    // Étapes de progression
+    const ETAPES = ['pending','confirmed','preparing','shipped','delivered'];
+    const ETAPE_LABELS = {
+      pending:   '⏳ En attente',
+      confirmed: '✅ Confirmée',
+      preparing: '🔧 En préparation',
+      shipped:   '🚚 Expédiée',
+      delivered: '🎉 Livrée',
+      paid:      '✅ Payée',
+      cancelled: '❌ Annulée'
+    };
+    const statutLabel = ETAPE_LABELS[c.statut] || '⏳ En attente';
+    const etapeIdx = ETAPES.indexOf(c.statut);
+    const statutColor = annulee ? 'var(--rouge)' : payee ? 'var(--vert)' : etapeIdx >= 4 ? 'var(--vert)' : 'var(--or)';
 
     // Photos des articles
     const articlesPhotos = Array.isArray(c.photos) && c.photos.length > 0
@@ -941,10 +953,35 @@ function renderCommandes() {
         ${c.produit ? `<div style="font-size:0.75rem;color:var(--texte-doux);margin-bottom:0.6rem;">🛍 ${c.produit}${c.taille ? ' · Taille : '+c.taille : ''}${c.couleur ? ' · '+c.couleur : ''}</div>` : ''}
         ${c.notes ? `<div style="font-size:0.75rem;color:var(--texte-doux);background:var(--fond-2);padding:0.4rem 0.6rem;border-radius:var(--rs);margin-bottom:0.6rem;">📝 ${c.notes}</div>` : ''}
 
-        <!-- ACTIONS -->
+        <!-- PROGRESSION -->
+        ${!annulee && !payee ? `
+        <div style="margin-bottom:0.8rem;">
+          <div style="font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--rose-fonce);font-weight:600;margin-bottom:0.5rem;">📍 Progression commande</div>
+          <div style="display:flex;gap:0;margin-bottom:0.4rem;">
+            ${['pending','confirmed','preparing','shipped','delivered'].map((e,i) => {
+              const actif = etapeIdx >= i;
+              const courant = etapeIdx === i;
+              return `<div style="flex:1;height:6px;background:${actif ? 'var(--rose)' : 'var(--fond-2)'};${i===0?'border-radius:50px 0 0 50px':''}${i===4?'border-radius:0 50px 50px 0':''}${courant?'animation:none':''}"></div>`;
+            }).join('')}
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:0.52rem;color:var(--gris);margin-bottom:0.7rem;flex-wrap:nowrap;gap:0;">
+            <span style="flex:1;text-align:center;">Attente</span>
+            <span style="flex:1;text-align:center;">Confirmée</span>
+            <span style="flex:1;text-align:center;">Préparation</span>
+            <span style="flex:1;text-align:center;">Expédiée</span>
+            <span style="flex:1;text-align:center;">Livrée</span>
+          </div>
+          <!-- BOUTONS ÉTAPE SUIVANTE / PRÉCÉDENTE -->
+          <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+            ${etapeIdx > 0 ? `<button onclick="changerStatut(${c.id},'${['pending','confirmed','preparing','shipped','delivered'][etapeIdx-1]}')" style="background:none;border:1.5px solid rgba(194,24,91,0.3);color:var(--texte-doux);padding:0.38rem 0.7rem;border-radius:var(--rs);font-size:0.65rem;cursor:pointer;font-family:var(--fc);">◀ Reculer</button>` : ''}
+            ${etapeIdx < 4 ? `<button onclick="changerStatut(${c.id},'${['pending','confirmed','preparing','shipped','delivered'][etapeIdx+1]}')" style="background:var(--rose);color:#fff;border:none;padding:0.38rem 0.9rem;border-radius:var(--rs);font-size:0.65rem;cursor:pointer;font-family:var(--fc);font-weight:500;flex:1;">Passer à : ${['✅ Confirmée','🔧 En préparation','🚚 Expédiée','🎉 Livrée'][etapeIdx]} ▶</button>` : `<div style="background:linear-gradient(135deg,var(--vert),#2ecc71);color:#fff;padding:0.38rem 0.9rem;border-radius:var(--rs);font-size:0.65rem;font-family:var(--fc);font-weight:500;flex:1;text-align:center;">🎉 Commande livrée !</div>`}
+          </div>
+        </div>` : ''}
+
+        <!-- ACTIONS PAIEMENT + ANNULATION -->
         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;padding-top:0.7rem;border-top:1px solid rgba(194,24,91,0.08);">
-          <button class="btn-statut paid"      onclick="changerStatut(${c.id},'paid')"     style="flex:1;min-width:70px;padding:0.4rem 0.5rem;font-size:0.62rem;">✅ Payée</button>
-          <button class="btn-statut pending"   onclick="changerStatut(${c.id},'pending')"  style="flex:1;min-width:70px;padding:0.4rem 0.5rem;font-size:0.62rem;">⏳ Attente</button>
+          <button class="btn-statut paid"      onclick="changerStatut(${c.id},'paid')"     style="flex:1;min-width:70px;padding:0.4rem 0.5rem;font-size:0.62rem;">✅ Marquer payée</button>
+          <button class="btn-statut pending"   onclick="changerStatut(${c.id},'pending')"  style="flex:1;min-width:70px;padding:0.4rem 0.5rem;font-size:0.62rem;">⏳ Réinitialiser</button>
           <button class="btn-statut cancelled" onclick="changerStatut(${c.id},'cancelled')" style="flex:1;min-width:70px;padding:0.4rem 0.5rem;font-size:0.62rem;">❌ Annuler</button>
           ${annulee ? `<button class="btn-del" style="background:var(--rouge);color:#fff;font-size:0.62rem;padding:0.4rem 0.7rem;border-radius:var(--rs);border:none;cursor:pointer;" onclick="demanderDelCmd(${c.id})">🗑 Retirer</button>` : ''}
         </div>
@@ -1073,9 +1110,24 @@ function buildFiche(cmd, global) {
 
       <!-- ACTIONS -->
       <div class="fiche-actions">
-        <span style="font-size:0.68rem;color:var(--gris);align-self:center;">Statut :</span>
-        <button class="btn-statut paid"      onclick="changerStatut(${cmd.id},'paid');${cb}">✅ Payée</button>
-        <button class="btn-statut pending"   onclick="changerStatut(${cmd.id},'pending');${cb}">⏳ Attente</button>
+        <div style="width:100%;margin-bottom:0.8rem;">
+          <div style="font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--rose-fonce);font-weight:600;margin-bottom:0.5rem;">📍 Progression commande</div>
+          ${(() => {
+            const ETAPES = ['pending','confirmed','preparing','shipped','delivered'];
+            const ETAPE_LABELS_COURT = ['Attente','Confirmée','Préparation','Expédiée','Livrée'];
+            const ei = ETAPES.indexOf(cmd.statut);
+            const annul = cmd.statut === 'cancelled';
+            const barre = ETAPES.map((_,i) => `<div style="flex:1;height:6px;background:${ei>=i&&!annul?'var(--rose)':'var(--fond-2)'};${i===0?'border-radius:50px 0 0 50px':''}${i===4?'border-radius:0 50px 50px 0':''}"></div>`).join('');
+            const labels = ETAPE_LABELS_COURT.map(l=>`<span style="flex:1;text-align:center;">${l}</span>`).join('');
+            const btnPrec = ei>0&&!annul ? `<button onclick="changerStatut(${cmd.id},'${ETAPES[ei-1]}');${cb}" style="background:none;border:1.5px solid rgba(194,24,91,0.3);color:var(--texte-doux);padding:0.38rem 0.7rem;border-radius:var(--rs);font-size:0.65rem;cursor:pointer;font-family:var(--fc);">◀ Reculer</button>` : '';
+            const ETAPE_NEXT_LABELS = ['✅ Confirmée','🔧 En préparation','🚚 Expédiée','🎉 Livrée'];
+            const btnSuiv = ei>=0&&ei<4&&!annul ? `<button onclick="changerStatut(${cmd.id},'${ETAPES[ei+1]}');${cb}" style="background:var(--rose);color:#fff;border:none;padding:0.38rem 0.9rem;border-radius:var(--rs);font-size:0.65rem;cursor:pointer;font-family:var(--fc);font-weight:500;flex:1;">Passer à : ${ETAPE_NEXT_LABELS[ei]} ▶</button>` : (ei===4?`<div style="background:linear-gradient(135deg,var(--vert),#2ecc71);color:#fff;padding:0.38rem 0.9rem;border-radius:var(--rs);font-size:0.65rem;text-align:center;flex:1;">🎉 Commande livrée !</div>`:'');
+            return `<div style="display:flex;gap:0;margin-bottom:0.3rem;">${barre}</div><div style="display:flex;font-size:0.52rem;color:var(--gris);margin-bottom:0.6rem;">${labels}</div><div style="display:flex;gap:0.4rem;flex-wrap:wrap;">${btnPrec}${btnSuiv}</div>`;
+          })()}
+        </div>
+        <span style="font-size:0.68rem;color:var(--gris);align-self:center;width:100%;margin-top:0.4rem;">Paiement / statut :</span>
+        <button class="btn-statut paid"      onclick="changerStatut(${cmd.id},'paid');${cb}">✅ Marquer payée</button>
+        <button class="btn-statut pending"   onclick="changerStatut(${cmd.id},'pending');${cb}">⏳ Réinitialiser</button>
         <button class="btn-statut cancelled" onclick="changerStatut(${cmd.id},'cancelled');${cb}">❌ Annuler</button>
       </div>
     </div>
@@ -1094,7 +1146,16 @@ async function changerStatut(id, statut) {
   commandes[idx].statut = statut;
   const ok = await sauvegarderServeur();
   if (ok) {
-    toast(statut==='paid'?'✅ Payée !':statut==='pending'?'⏳ En attente':'❌ Annulée', 'ok');
+    const labels = {
+      'pending':    '⏳ En attente',
+      'confirmed':  '✅ Confirmée !',
+      'preparing':  '🔧 En préparation !',
+      'shipped':    '🚚 Expédiée !',
+      'delivered':  '🎉 Livrée !',
+      'paid':       '✅ Payée !',
+      'cancelled':  '❌ Annulée'
+    };
+    toast(labels[statut] || '✅ Statut mis à jour', 'ok');
     renderStats(); renderCommandes(); renderRevenus();
   }
 }
