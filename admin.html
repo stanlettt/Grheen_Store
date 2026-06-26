@@ -381,51 +381,18 @@ body{font-family:var(--fc);background:var(--fond);color:var(--texte);font-size:1
     <div class="tab-c" id="tab-commandes">
       <h2 class="section-h">Commandes <span>reçues</span></h2>
 
-      <div class="info-box">💡 Les commandes passées sur le site arrivent automatiquement ici. Cherchez une commande par référence dans la barre en haut.</div>
-
-      <div class="box" style="border-color:rgba(243,156,18,0.3);">
-        <h3 style="font-family:var(--ft);font-size:1.1rem;font-weight:300;margin-bottom:1rem;color:var(--or);">➕ Ajouter une commande manuellement</h3>
-        <div class="cmd-grid">
-          <div class="fg"><label>Client</label><input type="text" id="cClient" placeholder="Nom du client"/></div>
-          <div class="fg"><label>Produit</label><input type="text" id="cProduit" placeholder="Nom du produit"/></div>
-          <div class="fg"><label>Montant (FCFA) *</label><input type="number" id="cMontant" placeholder="Ex : 8500"/></div>
-          <div class="fg"><label>Moyen de paiement</label>
-            <select id="cPaiement">
-              <option value="Airtel Money">📱 Airtel Money</option>
-              <option value="Moov Money">💳 Moov Money</option>
-              <option value="Espèces">💵 Espèces</option>
-              <option value="Autre">Autre</option>
-            </select>
-          </div>
-          <div class="fg"><label>Date</label><input type="date" id="cDate"/></div>
-          <div class="fg"><label>Statut</label>
-            <select id="cStatut">
-              <option value="paid">✅ Payée</option>
-              <option value="pending">⏳ En attente</option>
-              <option value="cancelled">❌ Annulée</option>
-            </select>
-          </div>
-        </div>
-        <button class="btn-or" onclick="ajouterCommande()">➕ Enregistrer</button>
+      <div class="table-top" style="background:#fff;border:1px solid rgba(194,24,91,0.12);border-radius:var(--r);padding:0.9rem 1rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.8rem;box-shadow:var(--ombre-d);">
+        <span id="cmdCount" style="font-size:0.8rem;color:var(--gris);"></span>
+        <select class="t-cat" onchange="filtrerCmd(this.value)">
+          <option value="">Toutes</option>
+          <option value="paid">✅ Payées</option>
+          <option value="pending">⏳ En attente</option>
+          <option value="cancelled">❌ Annulées</option>
+        </select>
       </div>
 
-      <div class="table-wrap">
-        <div class="table-top">
-          <span style="font-family:var(--ft);font-size:1.1rem;font-weight:300;">Historique</span>
-          <select class="t-cat" onchange="filtrerCmd(this.value)">
-            <option value="">Toutes</option>
-            <option value="paid">✅ Payées</option>
-            <option value="pending">⏳ En attente</option>
-            <option value="cancelled">❌ Annulées</option>
-          </select>
-        </div>
-        <div class="tbl-scroll">
-          <table class="tbl">
-            <thead><tr><th>Date</th><th>Client</th><th>Produit</th><th>Montant</th><th>Paiement</th><th>Statut</th><th></th></tr></thead>
-            <tbody id="tbodyCmd"></tbody>
-          </table>
-        </div>
-      </div>
+      <div id="cmdCartes"></div>
+
     </div>
 
     <!-- TAB REVENUS -->
@@ -894,27 +861,95 @@ function filtrerCmd(v) { filtreCmd = v; renderCommandes(); }
 function renderCommandes() {
   let liste = [...commandes].reverse();
   if (filtreCmd) liste = liste.filter(c => c.statut === filtreCmd);
-  const tbody = document.getElementById('tbodyCmd');
+
+  const count = document.getElementById('cmdCount');
+  if (count) count.textContent = `${liste.length} commande${liste.length > 1 ? 's' : ''}`;
+
+  const conteneur = document.getElementById('cmdCartes');
+  if (!conteneur) return;
+
   if (!liste.length) {
-    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:1.5rem;color:var(--gris);">Aucune commande</td></tr>`;
+    conteneur.innerHTML = `<div style="text-align:center;padding:3rem;color:var(--gris);background:#fff;border-radius:var(--r);border:1px dashed rgba(194,24,91,0.2);">
+      <div style="font-size:2.5rem;margin-bottom:0.8rem;">📭</div>
+      <div>Aucune commande pour le moment</div>
+      <div style="font-size:0.75rem;margin-top:0.4rem;opacity:0.7;">Les commandes passées sur le site apparaîtront ici automatiquement</div>
+    </div>`;
     return;
   }
-  tbody.innerHTML = liste.map(c => {
+
+  conteneur.innerHTML = liste.map(c => {
     const annulee = c.statut === 'cancelled';
-    return `<tr style="${annulee ? 'background:rgba(229,57,53,0.04);opacity:0.85;' : ''}">
-    <td style="color:var(--gris);font-size:0.78rem;">${c.date}</td>
-    <td>${c.nom||c.client||'—'}</td>
-    <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c.produit||'—'}</td>
-    <td style="color:var(--rose);font-weight:600;">${Number(c.montant).toLocaleString('fr-FR')}</td>
-    <td style="font-size:0.75rem;">${c.paiement||'—'}</td>
-    <td><span class="statut-badge ${c.statut}">${c.statut==='paid'?'✅ Payée':c.statut==='pending'?'⏳ Attente':'❌ Annulée'}</span></td>
-    <td>
-      ${annulee
-        ? `<button class="btn-del" style="background:var(--rouge);color:#fff;font-size:0.68rem;padding:0.3rem 0.7rem;" onclick="demanderDelCmd(${c.id})">🗑 Retirer</button>`
-        : `${role==='dev' ? `<button class="btn-del" onclick="demanderDelCmd(${c.id})">🗑</button>` : ''}`
-      }
-    </td>
-  </tr>`;
+    const payee   = c.statut === 'paid';
+    const attente = c.statut === 'pending';
+    const statutColor = payee ? 'var(--vert)' : annulee ? 'var(--rouge)' : 'var(--or)';
+    const statutLabel = payee ? '✅ Payée' : annulee ? '❌ Annulée' : '⏳ En attente';
+
+    // Photos des articles
+    const articlesPhotos = Array.isArray(c.photos) && c.photos.length > 0
+      ? c.photos
+      : (c.photo ? [{ nom: c.produit||'Article', qte: c.qte||1, prixUnit: c.montant, photo: c.photo }] : []);
+
+    const photosHTML = articlesPhotos.length > 0
+      ? articlesPhotos.map(a => `
+          <div style="flex:1;min-width:90px;max-width:160px;text-align:center;">
+            ${a.photo
+              ? `<img src="${a.photo}" alt="${a.nom}" style="width:100%;height:110px;object-fit:cover;border-radius:var(--rs);border:1.5px solid rgba(194,24,91,0.15);display:block;" onerror="this.parentElement.innerHTML='<div style=\\'height:110px;display:flex;align-items:center;justify-content:center;font-size:2rem;background:var(--fond-2);border-radius:var(--rs);\\'>📦</div>'">`
+              : `<div style="height:110px;display:flex;align-items:center;justify-content:center;font-size:2rem;background:var(--fond-2);border-radius:var(--rs);">📦</div>`
+            }
+            <div style="font-size:0.68rem;color:var(--texte-doux);margin-top:0.3rem;line-height:1.3;">${a.nom}<br><span style="color:var(--rose);font-weight:600;">×${a.qte}</span></div>
+          </div>`).join('')
+      : `<div style="height:110px;display:flex;align-items:center;justify-content:center;font-size:2rem;background:var(--fond-2);border-radius:var(--rs);flex:1;">📦</div>`;
+
+    const avance = calculerAvance(Number(c.montant));
+    const reste  = Number(c.montant) - avance;
+
+    return `
+    <div style="background:#fff;border:1.5px solid ${annulee ? 'rgba(229,57,53,0.25)' : 'rgba(194,24,91,0.12)'};border-radius:var(--r);margin-bottom:1rem;overflow:hidden;box-shadow:var(--ombre-d);${annulee ? 'opacity:0.85;' : ''}">
+
+      <!-- EN-TÊTE CARTE -->
+      <div style="background:linear-gradient(135deg,var(--rose),var(--rose-vif));color:#fff;padding:0.7rem 1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
+        <div>
+          <div style="font-family:var(--ft);font-size:1.1rem;font-weight:300;letter-spacing:0.08em;">${c.ref||'GS-????'}</div>
+          <div style="font-size:0.65rem;opacity:0.85;margin-top:0.1rem;">📅 ${c.date||'—'} &nbsp;·&nbsp; 💳 ${c.paiement||'—'}</div>
+        </div>
+        <span style="background:${payee ? 'rgba(39,174,96,0.3)' : annulee ? 'rgba(229,57,53,0.3)' : 'rgba(243,156,18,0.3)'};color:#fff;padding:0.25rem 0.7rem;border-radius:50px;font-size:0.65rem;font-weight:600;letter-spacing:0.08em;">${statutLabel}</span>
+      </div>
+
+      <div style="padding:0.9rem 1rem;">
+
+        <!-- PHOTOS ARTICLES -->
+        <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:0.9rem;">
+          ${photosHTML}
+        </div>
+
+        <!-- INFOS EN 2 COLONNES -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:0.8rem;">
+          <div style="background:var(--fond-2);border-radius:var(--rs);padding:0.6rem 0.8rem;">
+            <div style="font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--rose-fonce);font-weight:600;margin-bottom:0.3rem;">👤 Client</div>
+            <div style="font-size:0.82rem;font-weight:500;">${c.nom||c.client||'—'}</div>
+            <div style="font-size:0.75rem;color:var(--gris);">${c.tel||'—'}</div>
+            <div style="font-size:0.72rem;color:var(--texte-doux);margin-top:0.2rem;">${c.adresse||'—'}</div>
+          </div>
+          <div style="background:linear-gradient(135deg,#fce4ec,#fff5f7);border-radius:var(--rs);padding:0.6rem 0.8rem;border:1px solid rgba(194,24,91,0.15);">
+            <div style="font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--rose-fonce);font-weight:600;margin-bottom:0.3rem;">💰 Paiement</div>
+            <div style="font-family:var(--ft);font-size:1.2rem;color:var(--rose);font-weight:300;">${Number(c.montant).toLocaleString('fr-FR')} <span style="font-size:0.7rem;">FCFA</span></div>
+            <div style="font-size:0.72rem;color:var(--gris);">Avance : <strong style="color:var(--rose);">${avance.toLocaleString('fr-FR')} FCFA</strong></div>
+            <div style="font-size:0.72rem;color:var(--texte-doux);">Reste liv. : ${reste.toLocaleString('fr-FR')} FCFA</div>
+          </div>
+        </div>
+
+        ${c.produit ? `<div style="font-size:0.75rem;color:var(--texte-doux);margin-bottom:0.6rem;">🛍 ${c.produit}${c.taille ? ' · Taille : '+c.taille : ''}${c.couleur ? ' · '+c.couleur : ''}</div>` : ''}
+        ${c.notes ? `<div style="font-size:0.75rem;color:var(--texte-doux);background:var(--fond-2);padding:0.4rem 0.6rem;border-radius:var(--rs);margin-bottom:0.6rem;">📝 ${c.notes}</div>` : ''}
+
+        <!-- ACTIONS -->
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;padding-top:0.7rem;border-top:1px solid rgba(194,24,91,0.08);">
+          <button class="btn-statut paid"      onclick="changerStatut(${c.id},'paid')"     style="flex:1;min-width:70px;padding:0.4rem 0.5rem;font-size:0.62rem;">✅ Payée</button>
+          <button class="btn-statut pending"   onclick="changerStatut(${c.id},'pending')"  style="flex:1;min-width:70px;padding:0.4rem 0.5rem;font-size:0.62rem;">⏳ Attente</button>
+          <button class="btn-statut cancelled" onclick="changerStatut(${c.id},'cancelled')" style="flex:1;min-width:70px;padding:0.4rem 0.5rem;font-size:0.62rem;">❌ Annuler</button>
+          ${annulee ? `<button class="btn-del" style="background:var(--rouge);color:#fff;font-size:0.62rem;padding:0.4rem 0.7rem;border-radius:var(--rs);border:none;cursor:pointer;" onclick="demanderDelCmd(${c.id})">🗑 Retirer</button>` : ''}
+        </div>
+      </div>
+    </div>`;
   }).join('');
 }
 
