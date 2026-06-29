@@ -62,7 +62,7 @@ body {
   animation: splashOut 0.8s ease 3.2s forwards;
   pointer-events: none;
 }
-@keyframes splashOut { to { opacity: 0; pointer-events: none; } }
+@keyframes splashOut { to { opacity: 0; visibility: hidden; pointer-events: none; } }
 #splash .logo-splash {
   font-family: var(--font-titre);
   font-size: clamp(3rem, 8vw, 6rem);
@@ -109,8 +109,8 @@ header.scrolled { box-shadow: 0 2px 20px rgba(194,24,91,0.12); }
   flex-shrink: 0;
 }
 .logo span { color: var(--texte); }
-nav { display: flex; gap: 0; }
-nav a {
+header nav { display: flex; gap: 0; }
+header nav a {
   color: var(--texte-doux);
   text-decoration: none;
   font-size: 0.72rem;
@@ -120,13 +120,13 @@ nav a {
   transition: var(--transition);
   position: relative;
 }
-nav a::after {
+header nav a::after {
   content:''; position: absolute; bottom: 0; left: 50%; right: 50%;
   height: 1px; background: var(--rose);
   transition: var(--transition);
 }
-nav a:hover { color: var(--rose); }
-nav a:hover::after { left: 0; right: 0; }
+header nav a:hover { color: var(--rose); }
+header nav a:hover::after { left: 0; right: 0; }
 .header-actions { display: flex; gap: 0.5rem; align-items: center; }
 .btn-panier {
   background: none; border: 1px solid var(--rose);
@@ -952,7 +952,7 @@ footer {
 ═══════════════════════════════════════ */
 @media (max-width: 768px) {
   /* Header */
-  nav { display: none; }
+  header nav { display: none; }
   .btn-menu { display: flex; }
   header { padding: 0 1rem; height: 60px; }
   #infoBanner { margin-top: 60px; font-size: 0.68rem; padding: 0.5rem 1rem; }
@@ -1167,6 +1167,11 @@ footer {
       <span class="categorie-icone">✨</span>
       <div class="categorie-nom">Duo Chic</div>
       <div class="categorie-desc">Élégance · Style · Duo</div>
+    </div>
+    <div class="categorie-carte" onclick="filtrerCategorie('perruques')">
+      <span class="categorie-icone">💇‍♀️</span>
+      <div class="categorie-nom">Perruques & Tissages</div>
+      <div class="categorie-desc">Lace · Full Lace · Tissage naturel</div>
     </div>
   </div>
 </section>
@@ -1397,7 +1402,7 @@ footer {
       <a href="#categories">Toutes les catégories</a>
       <a href="#produits">Nouveautés</a>
       <a href="#produits">Bestsellers</a>
-      <a href="#produits">Soldes</a>
+      <a href="#" onclick="filtrerCategorie('perruques');return false;">Perruques & Tissages</a>
     </div>
     <div class="footer-col">
       <h4>Aide</h4>
@@ -1773,6 +1778,16 @@ const PRODUITS_DEFAUT = [
   { id:413, nom:'Duo Chic', cat:'duochic', icone:'✨', photos:['images/duo14.jpg'], prix:8500, badge:'Nouveau', note:5 },
   { id:414, nom:'Duo Chic', cat:'duochic', icone:'✨', photos:['images/duo15.jpg'], prix:8500, badge:'Nouveau', note:5 },
   { id:415, nom:'Duo Chic', cat:'duochic', icone:'✨', photos:['images/duo16.jpg'], prix:8500, badge:'Nouveau', note:5 },
+  { id:500, nom:'Perruque', cat:'perruques', icone:'💇‍♀️', photos:['images/per1.jpg'], prix:15000, badge:'Nouveau', note:5 },
+  { id:501, nom:'Perruque', cat:'perruques', icone:'💇‍♀️', photos:['images/per2.jpg'], prix:15000, badge:'Nouveau', note:5 },
+  { id:502, nom:'Perruque', cat:'perruques', icone:'💇‍♀️', photos:['images/per3.jpg'], prix:18000, badge:'', note:5 },
+  { id:503, nom:'Perruque', cat:'perruques', icone:'💇‍♀️', photos:['images/per4.jpg'], prix:18000, badge:'', note:5 },
+  { id:504, nom:'Perruque', cat:'perruques', icone:'💇‍♀️', photos:['images/per5.jpg'], prix:20000, badge:'', note:5 },
+  { id:505, nom:'Tissage', cat:'perruques', icone:'💇‍♀️', photos:['images/per6.jpg'], prix:12000, badge:'', note:5 },
+  { id:506, nom:'Tissage', cat:'perruques', icone:'💇‍♀️', photos:['images/per7.jpg'], prix:12000, badge:'', note:5 },
+  { id:507, nom:'Tissage', cat:'perruques', icone:'💇‍♀️', photos:['images/per8.jpg'], prix:14000, badge:'', note:5 },
+  { id:508, nom:'Tissage', cat:'perruques', icone:'💇‍♀️', photos:['images/per9.jpg'], prix:14000, badge:'', note:5 },
+  { id:509, nom:'Tissage', cat:'perruques', icone:'💇‍♀️', photos:['images/per10.jpg'], prix:16000, badge:'', note:5 },
 ];
 let PRODUITS = [];
 
@@ -1783,6 +1798,7 @@ const CATS_INFO = {
   sacs:        { label: 'Sacs',                   icone: '👜' },
   parfums:     { label: 'Parfums',                icone: '🌸' },
   duochic:     { label: 'Duo Chic',               icone: '✨' },
+  perruques:   { label: 'Perruques & Tissages',   icone: '💇‍♀️' },
 }
 
 /* ============================================================
@@ -2134,7 +2150,7 @@ function afficherProduits(liste) {
 
   // Mode "tout afficher" → une section par catégorie
   // Ordre d'affichage des catégories
-  const ordreCategories = ['stanley','bijoux','babouches','sacs','parfums','duochic'];
+  const ordreCategories = ['stanley','bijoux','babouches','sacs','parfums','duochic','perruques'];
   let html = '';
 
   ordreCategories.forEach(cat => {
@@ -2211,7 +2227,8 @@ function mettreAJourFiltresTags() {
   const noms = {
     stanley:'Stanley Cup', bijoux:'Bijoux & Accessoires',
     babouches:'Babouches', sacs:'Sacs',
-    parfums:'Parfums', duochic:'Duo Chic'
+    parfums:'Parfums', duochic:'Duo Chic',
+    perruques:'Perruques & Tissages'
   };
   document.getElementById('filtresTags').innerHTML =
     `<button class="filtre-tag ${!categorieFiltre ? 'actif' : ''}" onclick="filtrerCategorie(null)">Tout</button>` +
